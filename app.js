@@ -3,7 +3,7 @@
 // "mongodb+srv://Hanna:hZbZwwyED204fgd7@cluster0.2flnruh.mongodb.net/db-contacts?retryWrites=true&w=majority&appName=Cluster0"
 
 
-import express from 'express'
+import express from 'express';
 import cors from 'cors'
 import 'dotenv/config'
 import './db/db.js'
