@@ -1,7 +1,6 @@
 import "dotenv/config";
 import mongoose from "mongoose";
 
-
 const DB_HOST = process.env.DB_HOST;
 
 mongoose
@@ -10,6 +9,6 @@ mongoose
     console.log("Data base connect success");
   })
   .catch((error) => {
-    console.error("Database connection error", error)
-    process.exit(2)
+    console.error("Database connection error", error);
+    process.exit(2);
   });

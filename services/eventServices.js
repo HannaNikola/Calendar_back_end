@@ -2,49 +2,41 @@ import Event from "../models/eventModel.js";
 
 async function listEvents() {
   const data = await Event.find();
-  console.log(data);
+
   return data;
 }
 
 listEvents();
 
-async function  getEventById(idEvent){
+async function getEventById(idEvent) {
+  const allEvent = await listEvents();
+  const eventId = await Event.findById(idEvent);
 
-    const allEvent = await listEvents()
-    const eventId = await Event.findById(idEvent)
-    console.log(eventId)
-    return eventId
-    }
-
-    
-
+  return eventId;
+}
 
 async function addEvent({ title, start, end, allday, addTask }) {
   const data = await Event.create({ title, start, end, allday, addTask });
-  console.log(data)
+
   return data;
 }
 
-async function removeEvent(id){
-    const data = await Event.findByIdAndDelete(id)
-    return data
+async function removeEvent(id) {
+  const data = await Event.findByIdAndDelete(id);
+  return data;
 }
 
-
-async function updateEventById(id, body){
-
-    const data = await Event.findByIdAndUpdate({_id:id}, body, {new: true})
-    return data
+async function updateEventById(id, body) {
+  const data = await Event.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return data;
 }
-
-
 
 const eventServices = {
   listEvents,
   addEvent,
   getEventById,
   removeEvent,
-  updateEventById
+  updateEventById,
 };
 
 export default eventServices;
