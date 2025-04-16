@@ -8,3 +8,5 @@ export const createEventSchema = Joi.object({
     allDay: Joi.boolean(),
     addTask: Joi.boolean()
 })
+
+

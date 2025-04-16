@@ -31,13 +31,20 @@ async function removeEvent(id){
 }
 
 
+async function updateEventById(id, body){
+
+    const data = await Event.findByIdAndUpdate({_id:id}, body, {new: true})
+    return data
+}
+
 
 
 const eventServices = {
   listEvents,
   addEvent,
   getEventById,
-  removeEvent
+  removeEvent,
+  updateEventById
 };
 
 export default eventServices;

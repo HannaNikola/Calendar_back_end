@@ -11,6 +11,8 @@ export const getAllEvents = async (req, res) => {
   }
 };
 
+
+
 export const getOneEvent = async (req, res) => {
   try {
     const { id } = req.params;
@@ -24,6 +26,8 @@ export const getOneEvent = async (req, res) => {
   }
 };
 
+
+
 export const createEvent = async (req, res, next) => {
   try {
     const data = await eventServices.addEvent(req.body);
@@ -33,6 +37,8 @@ export const createEvent = async (req, res, next) => {
     next(error);
   }
 };
+
+
 
 export const deleteEvent = async (req, res, next) => {
   try {
@@ -50,3 +56,19 @@ export const deleteEvent = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const updateEvent = async(req, res, next) =>{
+
+    try{
+
+        const {id} = req.params;
+        const data = await eventServices.updateEventById(id, req.body)
+        if(!data){
+            throw httpError(404)
+        }
+        res.send(data).status(200)
+    }catch(error){
+        next(error)
+    }
+}
