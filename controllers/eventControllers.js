@@ -24,14 +24,28 @@ export const getOneEvent = async (req, res) => {
   }
 };
 
-
-
-
 export const createEvent = async (req, res, next) => {
   try {
     const data = await eventServices.addEvent(req.body);
     res.send(data).status(201);
-    console.log(data);
+   
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteEvent = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const data = await eventServices.removeEvent(id);
+    
+    if(!data){
+        throw httpError(404, "Event not found")
+
+    } res.status(200).json({ 
+        message: 'Success',  
+        data: data 
+      })
   } catch (error) {
     next(error);
   }

@@ -9,6 +9,7 @@ import './db/db.js'
 const app = express()
 
 const PORT = process.env.PORT || 3000
+console.log(PORT)
 
 app.use(morgan("tiny"));
 app.use(cors())

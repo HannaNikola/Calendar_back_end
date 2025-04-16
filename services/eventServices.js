@@ -25,13 +25,19 @@ async function addEvent({ title, start, end, allday, addTask }) {
   return data;
 }
 
+async function removeEvent(id){
+    const data = await Event.findByIdAndDelete(id)
+    return data
+}
+
 
 
 
 const eventServices = {
   listEvents,
   addEvent,
-  getEventById
+  getEventById,
+  removeEvent
 };
 
 export default eventServices;
