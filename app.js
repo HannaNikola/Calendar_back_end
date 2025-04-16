@@ -15,9 +15,9 @@ const swaggerDocument = JSON.parse(fs.readFileSync("./swagger.json", "utf-8"));
 
 var options = {
     swaggerOptions: {
-        url:"/api-docs/swagger.json",
+      url: "/api-docs/swagger.json",
     },
-}
+  };
 
 const app = express();
 
@@ -28,7 +28,7 @@ app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 
-app.use('/api-docs', swaggerUi.serveFiles(null, options), swaggerUi.setup(null, options));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get("/api-docs/swagger.json", (req, res) => res.json(swaggerDocument));
 
