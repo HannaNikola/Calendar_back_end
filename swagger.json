@@ -11,7 +11,7 @@
     },
     "servers": [
       {
-        "url": "https://calendar-back-end-s3b2.onrender.com"
+        "url": "https://calendar-back-end-s3b2.onrender.com/api-docs/"
       }
     ],
     "paths": {
