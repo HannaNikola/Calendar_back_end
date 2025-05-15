@@ -4,20 +4,8 @@ import morgan from "morgan";
 import eventRouter from "./routes/eventRouter.js";
 import "dotenv/config";
 import "./db/db.js";
-// import swaggerUi from "swagger-ui-express";
-// import fs from "fs";
 
 
-// const swaggerDocument = JSON.parse(fs.readFileSync("./swagger.json", "utf-8"));
-
-
-
-
-// var options = {
-//     swaggerOptions: {
-//       url: "/api-docs/swagger.json",
-//     },
-//   };
 
 const app = express();
 
@@ -28,9 +16,7 @@ app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// app.get("/api-docs/swagger.json", (req, res) => res.json(swaggerDocument));
 
 
 app.use("/api/events", eventRouter);
