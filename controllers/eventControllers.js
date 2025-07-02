@@ -63,6 +63,3 @@ export const updateEvent = async (req, res, next) => {
   }
 };
 
-// export const updatePartEvent = async(req, res, next)=>{
-
-// }
