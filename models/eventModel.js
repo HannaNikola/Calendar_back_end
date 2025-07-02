@@ -18,11 +18,11 @@ const eventSchema = new mongoose.Schema({
     },
     allDay:{
         type: Boolean,
-        default: false
+        
     },
     addTask:{
         type:Boolean,
-        default: false
+        
     }
 },{versionKey: false, timeseries: true})
 

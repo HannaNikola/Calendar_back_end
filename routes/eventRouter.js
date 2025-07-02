@@ -5,6 +5,7 @@ import {
   getAllEvents,
   getOneEvent,
   updateEvent,
+  updatePartEvent
 } from "../controllers/eventControllers.js";
 import validateEventBody from "../helpers/validateEventBody.js";
 import { createEventSchema } from "../schemas/eventSchema.js";
@@ -16,5 +17,6 @@ eventRouter.get("/:id", getOneEvent);
 eventRouter.delete("/:id", deleteEvent);
 eventRouter.post("/", validateEventBody(createEventSchema), createEvent);
 eventRouter.put("/:id", validateEventBody(createEventSchema), updateEvent);
+// eventRouter.patch("/:id", updatePartEvent)
 
 export default eventRouter;

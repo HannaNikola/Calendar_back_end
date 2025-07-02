@@ -62,3 +62,7 @@ export const updateEvent = async (req, res, next) => {
     next(error);
   }
 };
+
+// export const updatePartEvent = async(req, res, next)=>{
+
+// }
