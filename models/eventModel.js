@@ -18,7 +18,7 @@ const eventSchema = new mongoose.Schema({
     },
     allDay:{
         type: Boolean,
-        default: null
+        default: false
         
     },
     addTask:{
