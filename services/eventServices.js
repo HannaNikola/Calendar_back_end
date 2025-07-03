@@ -15,8 +15,8 @@ async function getEventById(idEvent) {
   return eventId;
 }
 
-async function addEvent({ title, start, end, allday, addTask }) {
-  const data = await Event.create({ title, start, end, allday, addTask });
+async function addEvent({ title, start, end, allDay, addTask }) {
+  const data = await Event.create({ title, start, end, allDay, addTask });
 
   return data;
 }
