@@ -8,13 +8,11 @@ const eventSchema = new mongoose.Schema({
     },
     start:{
         type: Date,
-        // required: [true, 'Start time important'],
-        // match: вариант записи даты
+        
     },
     end:{
         type:Date,
-        // required: [true, 'End time important'],
-        // match: вариант записи даты 10-15 или 10:15
+      
     },
     allDay:{
         type: Boolean,
@@ -24,8 +22,13 @@ const eventSchema = new mongoose.Schema({
     addTask:{
         type:Boolean,
         
+    },
+    repeat: {
+        type: String,
+        enum: ['none', 'daily', 'weekday', 'weekend'], 
+        default: 'none'
     }
-},{versionKey: false, timeseries: true})
+},{versionKey: false, timestamps: true})
 
  const Event = model('event',eventSchema)
 
