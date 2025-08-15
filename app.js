@@ -4,6 +4,7 @@ import morgan from "morgan";
 import eventRouter from "./routes/eventRouter.js";
 import "dotenv/config";
 import "./db/db.js";
+import todoRouter from "../Calendar_back_end/routes/todoRouter.js";
 
 
 
@@ -20,6 +21,8 @@ app.use(express.json());
 
 
 app.use("/api/events", eventRouter);
+app.use("/api/todo", todoRouter)
+
 
 app.use((_, res) => {
   res.status(404).json({

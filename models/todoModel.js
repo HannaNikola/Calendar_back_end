@@ -30,7 +30,7 @@ const todoSchema = new mongoose.Schema({
     eventId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'event',
-        default: null
+        required: [true, 'Event reference is required']
     },
     repeat: {
         type: String,

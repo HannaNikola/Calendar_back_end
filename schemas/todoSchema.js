@@ -7,7 +7,7 @@ export const createTodoSchema = Joi.object({
   isCompleted: Joi.boolean().optional(),
   end: Joi.date().required(),
   allDay: Joi.boolean().optional(),
-  eventId: Joi.string().hex().length(24).optional(),
+  eventId: Joi.string().hex().length(24).optional().required(),
   repeat: Joi.string()
     .valid("none", "daily", "weekday", "weekend")
     .default("none"),
