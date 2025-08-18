@@ -6,7 +6,8 @@ import {Schema, model} from "mongoose";
 const todoSchema = new mongoose.Schema({
     title:{
         type: String,
-        required:[true, 'Set title for todo']
+        required:[true, 'Set title for todo'],
+        trim: true
     },
     description:{
         type: String,
@@ -52,7 +53,8 @@ const todoSchema = new mongoose.Schema({
                 default: false 
             }
         },
-        default: {}
+        default: {},
+        _id: false 
     }
     
 },{versionKey: false, timestamps: true});

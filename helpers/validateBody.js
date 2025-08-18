@@ -1,6 +1,6 @@
 import httpError from "./httpError.js";
 
-const validateEventBody = (schema) => {
+const validatetBody = (schema) => {
   const func = (req, _, next) => {
     const { error } = schema.validate(req.body);
     if (error) {
@@ -11,4 +11,6 @@ const validateEventBody = (schema) => {
   return func;
 };
 
-export default validateEventBody;
+export default validatetBody ;
+
+

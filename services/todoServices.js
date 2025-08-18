@@ -8,19 +8,10 @@ async function listTodo() {
 listTodo();
 
 
-
-
-// async function getTodoById(id) {
-//   const allIdTodo = await listTodo();
-//   const todoId = await Todo.findById(id);
-
-//   return todoId;
-// }
-
-async function getTodoById(_id) {
-  return await Todo.findById(_id); 
+async function getTodoById(id) {
+  const todoId = await Todo.findById(id);
+  return todoId;
 }
-
 
 
 async function addTodo({
@@ -45,6 +36,9 @@ async function addTodo({
    if (!end) {
     end = event.end;
   }
+  if(!title){
+    throw new Error("Event Title not found");
+  }
 
   const data = await Todo.create({title,
   description,
@@ -58,10 +52,23 @@ async function addTodo({
   return data;
 }
 
+async function updateTodoById(id, body) {
+    const data = await Todo.findByIdAndUpdate({_id:id}, body, {new: true})
+    return data
+}
+
+async function removeTodo(id){
+    const data = await Todo.findByIdAndDelete(id);
+    return data;
+}
+
+
 const todoServices = {
   listTodo,
   getTodoById,
-  addTodo
+  addTodo,
+  updateTodoById,
+  removeTodo
 };
 export default todoServices;
 

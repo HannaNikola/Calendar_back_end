@@ -15,6 +15,7 @@ async function getEventById(idEvent) {
   return eventId;
 }
 
+// add repeat
 async function addEvent({ title, start, end, allDay, addTask }) {
   const data = await Event.create({ title, start, end, allDay, addTask });
 
