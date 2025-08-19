@@ -22,9 +22,9 @@ app.use(express.json());
 
 
 app.use("/api/events", eventRouter);
-
-app.use("/api/todo", todoRouter)
 app.use("/api/todo/overdue", filterObjectRouter)
+app.use("/api/todo", todoRouter)
+
 
 
 app.use((_, res) => {
