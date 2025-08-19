@@ -5,6 +5,7 @@ import eventRouter from "./routes/eventRouter.js";
 import "dotenv/config";
 import "./db/db.js";
 import todoRouter from "./routes/todoRouter.js";
+import filterObjectRouter from "./routes/filterObjectRouter.js"
 
 
 
@@ -21,7 +22,9 @@ app.use(express.json());
 
 
 app.use("/api/events", eventRouter);
+
 app.use("/api/todo", todoRouter)
+app.use("/api/todo/overdue", filterObjectRouter)
 
 
 app.use((_, res) => {
