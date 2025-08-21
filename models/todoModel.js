@@ -38,25 +38,26 @@ const todoSchema = new mongoose.Schema({
         enum: ['none', 'daily', 'weekday', 'weekend'], 
         default: 'none'
     },
-    reminder:{
-        type: { 
-            triggerBefore: {
-                type: String,
-                enum: ['30min', '1hour', '1day', 'none'],
-                default: 'none'
-            },
-            notifyAt: {
-                type: Date,
-                default: null 
-            },
-            notified: {
-                type: Boolean,
-                default: false 
-            }
+    reminder: {
+    type: {
+        triggerBefore: {
+            type: String,
+            enum: ['30min', '1hour', '1day', 'none'],
+            default: 'none'
         },
-        default: {},
-        _id: false 
-    }
+        notifyAt: {
+            type: Date,
+            default: null
+        },
+        notified: {
+            type: Boolean,
+            default: false
+        }
+    },
+    default: {}, 
+    _id: false     
+}
+
     
 },{versionKey: false, timestamps: true});
 
