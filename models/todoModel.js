@@ -46,7 +46,8 @@ const todoSchema = new mongoose.Schema({
                 default: 'none'
             },
             notifyAt: {
-                type: Date 
+                type: Date,
+                default: null 
             },
             notified: {
                 type: Boolean,
