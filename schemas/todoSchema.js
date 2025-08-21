@@ -13,9 +13,9 @@ export const createTodoSchema = Joi.object({
     .default("none"),
   reminder: Joi.object({
     triggerBefore: Joi.string()
-      .valid("30min", "1hour", "1day", "none")
-      .default("none"),
-    notifyAt: Joi.date().optional(),
+        .valid("30min", "1hour", "1day", "none")
+        .default("none"),
+    notifyAt: Joi.date().allow(null).optional(),
     notified: Joi.boolean().default(false),
-  }).default({}),
+}).default({}),
 });
