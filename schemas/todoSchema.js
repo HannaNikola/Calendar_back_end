@@ -19,3 +19,21 @@ export const createTodoSchema = Joi.object({
     notified: Joi.boolean().default(false),
 }).default({}),
 });
+
+
+
+export const updateTodoSchema = Joi.object({
+  title: Joi.string().trim().min(1),
+  description: Joi.string().allow(""),
+  isImportant: Joi.boolean(),
+  isCompleted: Joi.boolean(),
+  end: Joi.date(),
+  allDay: Joi.boolean(),
+  eventId: Joi.string().hex().length(24),
+  repeat: Joi.string().valid("none", "daily", "weekday", "weekend"),
+  reminder: Joi.object({
+    triggerBefore: Joi.string().valid("30min", "1hour", "1day", "none"),
+    notifyAt: Joi.date().allow(null),
+    notified: Joi.boolean(),
+  }),
+});
