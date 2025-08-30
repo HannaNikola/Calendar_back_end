@@ -2,7 +2,7 @@ import Todo from "../models/todoModel.js";
 import Event from '../models/eventModel.js'; 
 
 async function listTodo() {
-  const data = await Todo.find();
+  const data = await Todo.find().sort({ end: 1 });
   return data;
 }
 listTodo();
