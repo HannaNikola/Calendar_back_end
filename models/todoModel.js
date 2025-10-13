@@ -21,9 +21,13 @@ const todoSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    start:{
+        type: Date,
+        
+    },
     end:{
         type:Date,
-        required: [true, 'Set end date for todo'] 
+        
     },
     allDay: {
         type: Boolean
@@ -31,32 +35,10 @@ const todoSchema = new mongoose.Schema({
     eventId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'event',
-        required: [true, 'Event reference is required']
+        
     },
-    repeat: {
-        type: String,
-        enum: ['none', 'daily', 'weekday', 'weekend'], 
-        default: 'none'
-    },
-    reminder: {
-    type: {
-        triggerBefore: {
-            type: String,
-            enum: ['30min', '1hour', '1day', 'none'],
-            default: 'none'
-        },
-        notifyAt: {
-            type: Date,
-            default: null
-        },
-        notified: {
-            type: Boolean,
-            default: false
-        }
-    },
-    default: {}, 
-    _id: false     
-}
+
+    
 
     
 },{versionKey: false, timestamps: true});
@@ -70,5 +52,12 @@ todoSchema.set('toObject', { virtuals: true });
 const Todo = model('todo', todoSchema)
 
 export default Todo;
+
+
+
+
+
+
+
 
 

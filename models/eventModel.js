@@ -6,6 +6,10 @@ const eventSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Set title for event']
     },
+     description:{
+        type: String,
+        default: ''
+    },
     start:{
         type: Date,
         
@@ -23,16 +27,46 @@ const eventSchema = new mongoose.Schema({
         type:Boolean,
         
     },
+    todoId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'todo',
+    
+  },
+    colorEvent:{
+        type: String,
+        enum:['none', 'home', 'work','isektor'],
+        default: 'none'
+    },
     repeat: {
         type: String,
-        enum: ['none', 'daily', 'weekday', 'weekend'], 
+        enum: ['none', 'daily', 'workday', 'weekend'], 
         default: 'none'
-    }
+    },
+    reminder: {
+    type: {
+        triggerBefore: {
+            type: String,
+            enum: ['30min', '1hour', '1day', 'none'],
+            default: 'none'
+        },
+        notifyAt: {
+            type: Date,
+            default: null
+        },
+        notified: {
+            type: Boolean,
+            default: false
+        }
+    },
+    default: {}, 
+    _id: false     
+}
 },{versionKey: false, timestamps: true})
 
  const Event = model('event',eventSchema)
 
  export default Event
+
 
 
 
