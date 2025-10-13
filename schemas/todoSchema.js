@@ -1,16 +1,5 @@
 import Joi from "joi";
 
-// export const createTodoSchema = Joi.object({
-//   title: Joi.string().trim().min(1).required(),
-//   description: Joi.string().allow("").optional(),
-//   isImportant: Joi.boolean().optional(),
-//   isCompleted: Joi.boolean().optional(),
-//   start:Joi.date(),
-//   end: Joi.date().required(),
-//   allDay: Joi.boolean().optional(),
-//   eventId: Joi.string().hex().length(24).required(),
- 
-// });
 
 export const createTodoSchema = Joi.object({
   title: Joi.string().trim().min(1).required(),
