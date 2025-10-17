@@ -27,6 +27,10 @@ const eventSchema = new mongoose.Schema({
         type:Boolean,
         
     },
+    isCompletedTask:{
+        type: Boolean,
+        default: false
+    },
     todoId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'todo',

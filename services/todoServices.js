@@ -20,7 +20,7 @@ async function addTodo({
   title,
   description,
   isImportant,
-  isCompleted,
+  isCompletedTask,
   start,
   end,
   allDay,
@@ -36,6 +36,7 @@ async function addTodo({
       start: start || now,
       end: end || start || now,
       description,
+      isCompletedTask,
     });
   } else {
     event = await Event.findById(eventId);
@@ -47,7 +48,7 @@ async function addTodo({
     title,
     description,
     isImportant,
-    isCompleted,
+    isCompletedTask,
     start: start || event.start,
     end: end || event.end,
     allDay,
@@ -73,6 +74,7 @@ async function updateTodoById(id, body) {
     if (body.start !== undefined) eventUpdate.start = body.start;
     if (body.end !== undefined) eventUpdate.end = body.end;
     if (body.description !== undefined) eventUpdate.description = body.description;
+    if (body.isCompletedTask !== undefined) eventUpdate.isCompletedTask = body.isCompletedTask;
 
 
     if (Object.keys(eventUpdate).length > 0) {

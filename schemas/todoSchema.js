@@ -5,7 +5,7 @@ export const createTodoSchema = Joi.object({
   title: Joi.string().trim().min(1).required(),
   description: Joi.string().allow("").optional(),
   isImportant: Joi.boolean().optional(),
-  isCompleted: Joi.boolean().optional(),
+  isCompletedTask: Joi.boolean().optional(),
   start: Joi.date().optional().allow(null),
   end: Joi.date().optional().allow(null),
   allDay: Joi.boolean().optional(),
