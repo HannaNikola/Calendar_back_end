@@ -16,7 +16,7 @@ export const updateTodoSchema = Joi.object({
   title: Joi.string().trim().min(1),
   description: Joi.string().allow(""),
   isImportant: Joi.boolean(),
-  isCompleted: Joi.boolean(),
+  isCompletedTask: Joi.boolean(),
   start:Joi.date(),
   end: Joi.date(),
   allDay: Joi.boolean(),
