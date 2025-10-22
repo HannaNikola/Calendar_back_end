@@ -9,6 +9,7 @@ export const createTodoSchema = Joi.object({
   start: Joi.date().optional().allow(null),
   end: Joi.date().optional().allow(null),
   allDay: Joi.boolean().optional(),
+  addTask: Joi.boolean().optional(),
   eventId: Joi.string().hex().length(24).optional(),
 });
 
@@ -20,6 +21,7 @@ export const updateTodoSchema = Joi.object({
   start:Joi.date(),
   end: Joi.date(),
   allDay: Joi.boolean(),
+  addTask: Joi.boolean().optional(),
   eventId: Joi.string().hex().length(24),
 });
 

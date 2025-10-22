@@ -32,6 +32,10 @@ const todoSchema = new mongoose.Schema({
     allDay: {
         type: Boolean
     },
+    addTask:{
+        type:Boolean,
+        
+    },
     eventId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'event',

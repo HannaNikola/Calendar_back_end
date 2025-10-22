@@ -26,6 +26,7 @@ async function addEvent({
   allDay,
   addTask,
   isCompletedTask,
+  isImportant,
   todoId,
   colorEvent,
   repeat,
@@ -43,6 +44,7 @@ async function addEvent({
     allDay,
     addTask,
     isCompletedTask,
+    isImportant,
     todoId: todoId || null,
     colorEvent,
     repeat,
@@ -70,6 +72,7 @@ async function updateEventById(id, body) {
     if (body.end !== undefined) todoUpdate.end = body.end;
     if (body.description !== undefined) todoUpdate.description = body.description;
     if(body.isCompletedTask !== undefined) todoUpdate.isCompletedTask = body.isCompletedTask;
+    if(body.isImportant !== undefined) todoUpdate.isCompletedTask = body.isImportant;
 
     if (Object.keys(todoUpdate).length > 0) {
       await Todo.findByIdAndUpdate(event.todoId, todoUpdate, { new: true });

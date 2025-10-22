@@ -19,6 +19,7 @@ async function addTodo({
   start,
   end,
   allDay,
+  addTask,
   eventId,
 }) {
   let event;
@@ -30,7 +31,8 @@ async function addTodo({
       start: start || now,
       end: end || start || now,
       description,
-      isCompletedTask,
+      isImportant,
+      addTask,
     });
   } else {
     event = await Event.findById(eventId);
@@ -45,6 +47,7 @@ async function addTodo({
     start: start || event.start,
     end: end || event.end,
     allDay,
+    addTask,
     eventId: event._id,
   });
 
@@ -52,6 +55,8 @@ async function addTodo({
 
   return todo;
 }
+
+
 
 async function updateTodoById(id, body) {
   const data = await Todo.findByIdAndUpdate({ _id: id }, body, { new: true });
@@ -67,7 +72,9 @@ async function updateTodoById(id, body) {
       eventUpdate.description = body.description;
     if (body.isCompletedTask !== undefined)
       eventUpdate.isCompletedTask = body.isCompletedTask;
-
+     if (body.isImportant !== undefined)
+      eventUpdate.isImportant = body.isImportant;
+    if(body.addTask !== undefined) eventUpdate.end = body.end;
     if (Object.keys(eventUpdate).length > 0) {
       await Event.findByIdAndUpdate(data.eventId, eventUpdate, { new: true });
     }

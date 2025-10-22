@@ -9,6 +9,7 @@ export const createEventSchema = Joi.object({
   allDay: Joi.boolean().optional(),
   addTask: Joi.boolean().optional(),
   isCompletedTask: Joi.boolean().optional(),
+  isImportant: Joi.boolean().optional(),
   todoId: Joi.string().hex().length(24),
   colorEvent: Joi.string(),
   repeat: Joi.string()
