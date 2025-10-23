@@ -32,9 +32,16 @@ async function addEvent({
   repeat,
   reminder,
 }) {
-   const now = new Date();
+  const now = new Date();
   const eventStart = start || now;
-  const eventEnd = end || now;
+  const eventEnd =
+    end ||
+    new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23, 59, 59, 999
+    );
 
   const data = await Event.create({
     title,
@@ -103,3 +110,13 @@ const eventServices = {
 };
 
 export default eventServices;
+
+
+
+
+
+
+
+
+
+

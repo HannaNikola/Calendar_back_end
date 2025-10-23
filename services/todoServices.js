@@ -26,10 +26,19 @@ async function addTodo({
 
   if (!eventId) {
     const now = new Date();
+
+    const endOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,59,59,999
+    )
+    const endTime = end || endOfDay;
+
     event = await Event.create({
       title,
       start: start || now,
-      end: end || start || now,
+      end: endTime,
       description,
       isImportant,
       addTask,
