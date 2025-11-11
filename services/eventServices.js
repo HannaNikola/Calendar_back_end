@@ -62,6 +62,9 @@ async function addEvent({
 }
 
 
+
+
+
 async function updateEventById(id, body) {
   
   const event = await Event.findById(id);
@@ -79,7 +82,7 @@ async function updateEventById(id, body) {
     if (body.end !== undefined) todoUpdate.end = body.end;
     if (body.description !== undefined) todoUpdate.description = body.description;
     if(body.isCompletedTask !== undefined) todoUpdate.isCompletedTask = body.isCompletedTask;
-    if(body.isImportant !== undefined) todoUpdate.isCompletedTask = body.isImportant;
+    if(body.isImportant !== undefined) todoUpdate.isImportant = body.isImportant;
 
     if (Object.keys(todoUpdate).length > 0) {
       await Todo.findByIdAndUpdate(event.todoId, todoUpdate, { new: true });
@@ -100,6 +103,9 @@ async function removeEvent(id) {
   }
   return data;
 }
+
+
+
 
 const eventServices = {
   listEvents,

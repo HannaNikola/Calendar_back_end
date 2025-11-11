@@ -83,7 +83,7 @@ async function updateTodoById(id, body) {
       eventUpdate.isCompletedTask = body.isCompletedTask;
      if (body.isImportant !== undefined)
       eventUpdate.isImportant = body.isImportant;
-    if(body.addTask !== undefined) eventUpdate.end = body.end;
+    if(body.addTask !== undefined) eventUpdate.addTask = body.addTask;
     if (Object.keys(eventUpdate).length > 0) {
       await Event.findByIdAndUpdate(data.eventId, eventUpdate, { new: true });
     }
@@ -113,3 +113,11 @@ const todoServices = {
   removeTodo,
 };
 export default todoServices;
+
+
+
+
+
+
+
+
