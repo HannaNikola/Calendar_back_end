@@ -13,15 +13,14 @@ export const createTodoSchema = Joi.object({
   eventId: Joi.string().hex().length(24).optional(),
 });
 
-export const updateTodoSchema = Joi.object({
-  title: Joi.string().trim().min(1),
-  description: Joi.string().allow(""),
-  isImportant: Joi.boolean(),
-  isCompletedTask: Joi.boolean(),
-  end: Joi.date().optional().allow(null),
-  allDay: Joi.boolean().optional(),
-  allDay: Joi.boolean(),
-  addTask: Joi.boolean().optional(),
-  eventId: Joi.string().hex().length(24),
-});
+// export const updateTodoSchema = Joi.object({
+//   title: Joi.string().trim().min(1),
+//   description: Joi.string().allow(""),
+//   isImportant: Joi.boolean(),
+//   isCompletedTask: Joi.boolean(),
+//   end: Joi.date().optional().allow(null),
+//   allDay: Joi.boolean().optional(),
+//   addTask: Joi.boolean().optional(),
+//   eventId: Joi.string().hex().length(24),
+// });
 
