@@ -18,6 +18,7 @@ export const updateTodoSchema = Joi.object({
   description: Joi.string().allow(""),
   isImportant: Joi.boolean(),
   isCompletedTask: Joi.boolean(),
+  start: Joi.date().optional().allow(null),
   end: Joi.date().optional().allow(null),
   allDay: Joi.boolean().optional(),
   addTask: Joi.boolean().optional(),
