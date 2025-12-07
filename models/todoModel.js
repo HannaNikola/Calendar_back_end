@@ -41,10 +41,12 @@ const todoSchema = new mongoose.Schema({
         ref: 'event',
         
     },
+owner:{
+type: mongoose.Schema.Types.ObjectId,
+ref:'User',
+required: true
 
-    
-
-    
+}  
 },{versionKey: false, timestamps: true});
 
 todoSchema.virtual('isOverdue').get(function(){
@@ -56,8 +58,6 @@ todoSchema.set('toObject', { virtuals: true });
 const Todo = model('todo', todoSchema)
 
 export default Todo;
-
-
 
 
 

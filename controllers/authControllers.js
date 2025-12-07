@@ -56,3 +56,27 @@ const data = await userSchema.create({
         next(error) 
     }
  }
+
+
+
+export const authCurrent = async (req, res)=>{
+    const {_id, email, token} = req.user;
+
+    res.json({
+        _id,
+        email,
+        token
+    })
+}
+
+
+
+
+export const authLogout = async (req, res, next)=>{
+    try{
+        await userSchema.findByIdAndUpdate(req.user._id, {token: null})
+        res.status(204).end()
+    }catch(error){
+        next(error)
+    }
+}
