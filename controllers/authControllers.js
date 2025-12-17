@@ -1,82 +1,111 @@
- import userSchema  from "../models/user.js"
- import bcrypt from "bcrypt";
+import userSchema from "../models/user.js";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
- 
- export const authRegister = async(req, res, next)=>{
-const {password, email , name} = req.body;
-const normalizedEmail = email.toLowerCase()
-const normalizeName = name.trim();
-    try{
-const user = await userSchema.findOne({email: normalizedEmail});
-if(user !== null){
-    return res.status(409).send({ message: "Email in use" })
-}
-const passwordHash = await bcrypt.hash(password, 10)
-console.log('хеш',passwordHash)
+const isProduction = process.env.IS_PRODUCTION === "true";
 
-const data = await userSchema.create({
-    password: passwordHash,
-    email: normalizedEmail,
-    name:normalizeName
-})
- res.status(201).send({ message: "Registration successful" });
-    }catch(error){
-    next(error)
+export const authRegister = async (req, res, next) => {
+  const { password, email, name } = req.body;
+  const normalizedEmail = email.toLowerCase();
+  const normalizeName = name.trim();
+  try {
+    const user = await userSchema.findOne({ email: normalizedEmail });
+    if (user !== null) {
+      return res.status(409).send({ message: "Email in use" });
     }
+    const passwordHash = await bcrypt.hash(password, 10);
 
- }
+    const newUser = await userSchema.create({
+      password: passwordHash,
+      email: normalizedEmail,
+      name: normalizeName,
+    });
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    await userSchema.findByIdAndUpdate(newUser._id, { token });
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
- export const authLogin = async (req, res, next) =>{
-    const {password, email} = req.body;
-    const normalizedEmail = email.toLowerCase();
+    res.status(201).json({
+      message: "Registration successful",
+      user: {
+        id: newUser._id,
+        email: newUser.email,
+        name: newUser.name,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-    try{
+export const authLogin = async (req, res, next) => {
+  const { password, email } = req.body;
+  const normalizedEmail = email.toLowerCase();
 
-        const user = await userSchema.findOne({email: normalizedEmail});
-        if(user === null){
-            return res.status(401).send({message:"Not authorized"});
-
-        }
-        const isMatch = await bcrypt.compare(password, user.password)
-        if (isMatch === false){
-             return res.status(401).send({message: "Not authorized"})
-        }
-        const token = jwt.sign({
-            id: user._id
-        },
-        process.env.JWT_SECRET,
-    )
-       await userSchema.findByIdAndUpdate(user._id, {token});
-       console.log("token", token)
-       res.send({token})
-
-    }catch(error){
-        next(error) 
+  try {
+    const user = await userSchema.findOne({ email: normalizedEmail });
+    if (user === null) {
+      return res.status(401).send({ message: "Not authorized" });
     }
- }
-
-
-
-export const authCurrent = async (req, res)=>{
-    const {_id, email, token} = req.user;
-
-    res.json({
-        _id,
-        email,
-        token
-    })
-}
-
-
-
-
-export const authLogout = async (req, res, next)=>{
-    try{
-        await userSchema.findByIdAndUpdate(req.user._id, {token: null})
-        res.status(204).end()
-    }catch(error){
-        next(error)
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (isMatch === false) {
+      return res.status(401).send({ message: "Not authorized" });
     }
-}
+    const token = jwt.sign(
+      {
+        id: user._id,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+    await userSchema.findByIdAndUpdate(user._id, { token });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      message: "Login successful",
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const authCurrent = async (req, res) => {
+  const { _id, email, name } = req.user;
+
+  res.json({
+    _id,
+    email,
+  });
+};
+
+export const authLogout = async (req, res, next) => {
+  try {
+    await userSchema.findByIdAndUpdate(req.user._id, { token: null });
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+    });
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+};

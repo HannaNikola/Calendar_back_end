@@ -7,18 +7,12 @@ import tokenAuth  from "../helpers/tokenAuth.js"
 
 const todoRouter = express.Router();
 
-todoRouter.get("/", getAllTodo);
-todoRouter.get("/:id",getOneTodo);
-todoRouter.post("/",validatetBody(createTodoSchema),createTodo);
-todoRouter.patch("/:id",validatetBody(updateTodoSchema),updateTodo)
-todoRouter.delete("/:id", deleteTodo )
 
-
-// todoRouter.get("/",tokenAuth, getAllTodo);
-// todoRouter.get("/:id", tokenAuth, getOneTodo);
-// todoRouter.post("/",tokenAuth, validatetBody(createTodoSchema),createTodo);
-// todoRouter.patch("/:id",tokenAuth, validatetBody(updateTodoSchema),updateTodo)
-// todoRouter.delete("/:id", tokenAuth, deleteTodo )
+todoRouter.get("/",tokenAuth, getAllTodo);
+todoRouter.get("/:id", tokenAuth, getOneTodo);
+todoRouter.post("/",tokenAuth, validatetBody(createTodoSchema),createTodo);
+todoRouter.patch("/:id",tokenAuth, validatetBody(updateTodoSchema),updateTodo)
+todoRouter.delete("/:id", tokenAuth, deleteTodo )
 
 
 

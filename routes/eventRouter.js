@@ -12,16 +12,10 @@ import tokenAuth from "../helpers/tokenAuth.js"
 
 const eventRouter = express.Router();
 
-eventRouter.get("/", getAllEvents);
-eventRouter.get("/:id", getOneEvent);
-eventRouter.delete("/:id", deleteEvent);
-eventRouter.post("/", validatetBody(createEventSchema), createEvent);
-eventRouter.patch("/:id",validatetBody(createEventSchema), updateEvent);
-
-// eventRouter.get("/", tokenAuth, getAllEvents);
-// eventRouter.get("/:id", tokenAuth, getOneEvent);
-// eventRouter.delete("/:id", tokenAuth,  deleteEvent);
-// eventRouter.post("/", tokenAuth, validatetBody(createEventSchema), createEvent);
-// eventRouter.patch("/:id", tokenAuth, validatetBody(createEventSchema), updateEvent);
+eventRouter.get("/", tokenAuth, getAllEvents);
+eventRouter.get("/:id", tokenAuth, getOneEvent);
+eventRouter.delete("/:id", tokenAuth,  deleteEvent);
+eventRouter.post("/", tokenAuth, validatetBody(createEventSchema), createEvent);
+eventRouter.patch("/:id", tokenAuth, validatetBody(createEventSchema), updateEvent);
 
 export default eventRouter;

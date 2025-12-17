@@ -7,6 +7,7 @@ import "./db/db.js";
 import todoRouter from "./routes/todoRouter.js";
 import filterObjectRouter from "./routes/filterObjectRouter.js"
 import authRouter from "./routes/authRouter.js";
+import cookieParser from 'cookie-parser';
 
 
 
@@ -16,7 +17,11 @@ const PORT = process.env.PORT || 2000;
 
 
 app.use(morgan("tiny"));
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
+app.use(cookieParser())
 app.use(express.json());
 
 
