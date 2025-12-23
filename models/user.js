@@ -25,14 +25,16 @@ const userSchema = new mongoose.Schema(
     //   type: String,
     //   default: null,
     // },
-    token: {
-      type: String,
+    // token: {
+    //   type: String,
       
+    // },
+    refreshToken: {
+      type: String,
     },
   },
   { versionKey: false }
 );
 
 export default mongoose.model("User", userSchema);
-
 
