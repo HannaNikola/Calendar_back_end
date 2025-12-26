@@ -1,33 +1,26 @@
-import express from "express"
-import validatetBody from "../helpers/validateBody.js";
-import {registerShema, loginShema} from "../schemas/authSchema.js"
-import {authRegister,authLogin, authLogout, authCurrent} from "../controllers/authControllers.js"
-import accessTokenAuth from "../helpers/accessTokenAuth.js"
+import express from "express";
+import { registerShema, loginShema } from "../schemas/authSchema.js";
+import {
+  authRegister,
+  authLogin,
+  authLogout,
+  authLogoutAll,
+  authCurrent,
+  authRefresh,
+  authDeleteUser,
+} from "../controllers/authControllers.js";
+import tokenAuth from "../helpers/tokenAuth.js";
+import { celebrate } from "celebrate";
 
-// const authRouter = express.Router()
+const authRouter = express.Router();
 
-// authRouter.post("/register",validatetBody(registerShema),authRegister);
-// authRouter.post("/login", validatetBody(loginShema),authLogin);
-// authRouter.post("/logout", tokenAuth, authLogout)
-// authRouter.get("/current", tokenAuth, authCurrent)
+authRouter.post("/register", celebrate(registerShema), authRegister);
+authRouter.post("/login", celebrate(loginShema), authLogin);
+authRouter.post("/refresh", authRefresh);
+authRouter.post("/logout", tokenAuth, authLogout);
+authRouter.post("/logout-all", tokenAuth, authLogoutAll);
 
-// export default authRouter
+authRouter.get("/current", tokenAuth, authCurrent);
+authRouter.delete("/delete", tokenAuth, authDeleteUser);
 
-
-const authRouter = express.Router()
-
-authRouter.post("/register",validatetBody(registerShema),authRegister);
-authRouter.post("/login", validatetBody(loginShema),authLogin);
-authRouter.post("/logout", accessTokenAuth, authLogout)
-authRouter.get("/current", accessTokenAuth, authCurrent)
-
-authRouter.post("/refresh", async (req, res) => {
-  try {
-    const { accessToken } = await verifyRefreshToken(req.cookies.refreshToken);
-    res.status(200).json({ accessToken });
-  } catch (err) {
-    res.status(401).json({ message: err.message });
-  }
-});
-
-export default authRouter
+export default authRouter;

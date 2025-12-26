@@ -1,6 +1,5 @@
 import Joi from "joi";
 
-
 export const createTodoSchema = Joi.object({
   title: Joi.string().trim().min(1).required(),
   description: Joi.string().allow("").optional(),
@@ -24,4 +23,3 @@ export const updateTodoSchema = Joi.object({
   addTask: Joi.boolean().optional(),
   eventId: Joi.string().hex().length(24),
 });
-

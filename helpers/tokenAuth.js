@@ -1,43 +1,38 @@
-import jwt from "jsonwebtoken";
-import User from "../models/user.js";
+import User from "../models/userModel.js";
 import dotenv from "dotenv";
-
+import { Session } from "../models/sessionModel.js";
+import createHttpError from "http-errors";
 dotenv.config();
 
-function tokenAuth(req, res, next) {
-  const token = req.cookies.token;
+const tokenAuth = async (req, res, next) => {
+  const { accessToken, sessionId } = req.cookies;
 
-  if (!token) {
-    return res.status(401).send({ message: "Not authorized" });
+  if (!accessToken || !sessionId) {
+    return next(createHttpError(401, "Not authenticated"));
   }
-  jwt.verify(token, process.env.JWT_SECRET, async (err, decode) => {
-    if (err) {
-      if (err.name === "TokenExpiredError") {
-        return res.status(401).send({ message: "Not authorized" });
-      }
-      return res.status(401).send({ message: "Not authorized" });
-    }
-    const user = await User.findById(decode.id);
-    if (user === null) {
-      return res.status(401).send({ message: "Not authorized" });
-    }
-    if (user.token !== token) {
-      return res.status(401).send({ message: "Not authorized" });
-    }
-    req.user = {
-      _id: user.id,
-      email: user.email,
-      token: user.token,
-    };
-    next();
-  });
-}
 
+  const session = await Session.findById(sessionId);
+  if (!session) {
+    return next(createHttpError(401, "Session not found"));
+  }
+
+  if (session.accessToken !== accessToken) {
+    return next(createHttpError(401, "Invalid access token"));
+  }
+
+  if (new Date() > session.accessTokenValidUntil) {
+    return next(createHttpError(401, "Access token expired"));
+  }
+
+  const user = await User.findById(session.userId);
+  if (!user) {
+    return next(createHttpError(401, "User not found"));
+  }
+
+  req.user = user;
+  req.session = session;
+
+  next();
+};
 
 export default tokenAuth;
-
-
-
-
-
-

@@ -1,10 +1,9 @@
 import express from "express";
-import {getOverdueTodos} from "../controllers/filterObjectControllers.js"
-import accessTokenAuth from "../helpers/accessTokenAuth.js"
+import { getOverdueTodos } from "../controllers/filterObjectControllers.js";
+import tokenAuth from "../helpers/tokenAuth.js";
 
 const filterObjectRouter = express.Router();
 
+filterObjectRouter.get("/", tokenAuth, getOverdueTodos);
 
-filterObjectRouter.get('/', accessTokenAuth, getOverdueTodos)
-
-export default filterObjectRouter
+export default filterObjectRouter;

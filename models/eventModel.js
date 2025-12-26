@@ -1,88 +1,78 @@
-
 import mongoose from "mongoose";
-import {Schema, model} from "mongoose";
+import { Schema, model } from "mongoose";
 
-const eventSchema = new mongoose.Schema({
-    title:{
-        type: String,
-        required: [true, 'Set title for event']
+const eventSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: [true, "Set title for event"],
     },
-     description:{
-        type: String,
-        default: ''
+    description: {
+      type: String,
+      default: "",
     },
-    start:{
-        type: Date,
-        
+    start: {
+      type: Date,
     },
-    end:{
-        type:Date,
-      
+    end: {
+      type: Date,
     },
-    allDay:{
-        type: Boolean,
-        
-        
-    },
-    addTask:{
-        type:Boolean,
-        
-    },
-    isImportant:{
+    allDay: {
       type: Boolean,
-      default: false
     },
-    isCompletedTask:{
-        type: Boolean,
-        default: false
+    addTask: {
+      type: Boolean,
+    },
+    isImportant: {
+      type: Boolean,
+      default: false,
+    },
+    isCompletedTask: {
+      type: Boolean,
+      default: false,
     },
     todoId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'todo',
-    
-  },
-    colorEvent:{
-        type: String,
-        enum:['none', 'home', 'work','isektor'],
-        default: 'none'
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "todo",
+    },
+    colorEvent: {
+      type: String,
+      enum: ["none", "home", "work", "isektor"],
+      default: "none",
     },
     repeat: {
-        type: String,
-        enum: ['none', 'daily', 'workday', 'weekend'], 
-        default: 'none'
+      type: String,
+      enum: ["none", "daily", "workday", "weekend"],
+      default: "none",
     },
     reminder: {
-    type: {
+      type: {
         triggerBefore: {
-            type: String,
-            enum: ['30min', '1hour', '1day', 'none'],
-            default: 'none'
+          type: String,
+          enum: ["30min", "1hour", "1day", "none"],
+          default: "none",
         },
         notifyAt: {
-            type: Date,
-            default: null
+          type: Date,
+          default: null,
         },
         notified: {
-            type: Boolean,
-            default: false
-        }
+          type: Boolean,
+          default: false,
+        },
+      },
+      default: {},
+      _id: false,
     },
-    default: {}, 
-    _id: false     
-},
-owner:{
-type: mongoose.Schema.Types.ObjectId,
-ref: 'User',
-required: true
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+  },
+  { versionKey: false, timestamps: true }
+);
 
-}
-},{versionKey: false, timestamps: true})
+const Event = model("event", eventSchema);
 
- const Event = model('event',eventSchema)
-
- export default Event
-
-
-
-
-
+export default Event;

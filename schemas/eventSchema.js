@@ -1,5 +1,4 @@
-import Joi from 'joi'
-
+import Joi from "joi";
 
 export const createEventSchema = Joi.object({
   title: Joi.string().required(),
@@ -13,14 +12,13 @@ export const createEventSchema = Joi.object({
   todoId: Joi.string().hex().length(24),
   colorEvent: Joi.string(),
   repeat: Joi.string()
-        .valid("none", "daily", "workday", "weekend","yearly")
-        .default("none"),
+    .valid("none", "daily", "workday", "weekend", "yearly")
+    .default("none"),
   reminder: Joi.object({
-  triggerBefore: Joi.string()
-            .valid("30min", "1hour", "1day", "none")
-            .default("none"),
-  notifyAt: Joi.date().allow(null).optional(),
-  notified: Joi.boolean().default(false),
-    }).default({}),
+    triggerBefore: Joi.string()
+      .valid("30min", "1hour", "1day", "none")
+      .default("none"),
+    notifyAt: Joi.date().allow(null).optional(),
+    notified: Joi.boolean().default(false),
+  }).default({}),
 });
-
