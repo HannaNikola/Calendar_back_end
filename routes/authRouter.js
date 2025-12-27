@@ -24,3 +24,7 @@ authRouter.get("/current", tokenAuth, authCurrent);
 authRouter.delete("/delete", tokenAuth, authDeleteUser);
 
 export default authRouter;
+
+
+
+
