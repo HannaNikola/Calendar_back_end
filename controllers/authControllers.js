@@ -40,11 +40,11 @@ export const authLogin = async (req, res, next) => {
 
   const user = await User.findOne({ email });
   if (!user) {
-    throw createHttpError(401, "Email or password is wrong");
+    throw createHttpError(400, "Email or password is wrong");
   }
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    throw createHttpError(401, "Email or password is wrong");
+    throw createHttpError(400, "Email or password is wrong");
   }
 
   const newSession = await createSession(user._id);
