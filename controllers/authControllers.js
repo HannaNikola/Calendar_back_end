@@ -1,13 +1,44 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import dotenv from "dotenv";
 import User from "../models/userModel.js";
 import { Session } from "../models/sessionModel.js";
 import createHttpError from "http-errors";
 import { createSession } from "../helpers/createSession.js";
 import { setSessionCookies } from "../helpers/setSessionCookies.js";
 import { FIFTEEN_MINUTES, ONE_DAY } from "../constants/index.js";
-dotenv.config();
+import {
+  generateTokenVerify,
+  hashTokenVerify,
+} from "../helpers/generateTokenVerify.js";
+import EmailVerification from "../models/emailVerifycationModel.js";
+import { sendEmail } from "../helpers/sendEmail.js";
+
+
+// export const authRegister = async (req, res, next) => {
+//   const { password, email, name } = req.body;
+
+//   const existingUser = await User.exists({ email });
+//   if (existingUser) {
+//     throw createHttpError(409, "Email in use");
+//   }
+
+//   const passwordHash = await bcrypt.hash(password, 10);
+
+//   const newUser = await User.create({
+//     email,
+//     name,
+//     password: passwordHash,
+//   });
+
+//   const newSession = await createSession(newUser._id);
+//   setSessionCookies(res, newSession);
+
+//   res.status(201).json({
+//     message: "Registration successful",
+//     user: newUser,
+//     password: passwordHash,
+//   });
+// };
 
 export const authRegister = async (req, res, next) => {
   const { password, email, name } = req.body;
@@ -23,17 +54,91 @@ export const authRegister = async (req, res, next) => {
     email,
     name,
     password: passwordHash,
+    emailVerified: false,
   });
 
-  const newSession = await createSession(newUser._id);
-  setSessionCookies(res, newSession);
+  const token = generateTokenVerify();
+  const tokenHash = hashTokenVerify(token);
 
+  await EmailVerification.create({
+    userId: newUser._id,
+    tokenHash,
+    expiredAt: Date.now() + 24 * 60 * 60 * 1000,
+  });
+  await sendEmail({
+    to: newUser.email,
+    subject: "Confirm your email",
+    html: `
+  <div style="font-family: Arial, sans-serif; line-height: 1.5;">
+    <h2>Confirm your email</h2>
+    <p>Please confirm your email address by clicking the button below:</p>
+
+    <a href="${process.env.FRONTEND_URL}/verify-email?token=${token}"
+       style="
+         display: inline-block;
+         padding: 12px 24px;
+         background-color: #0000CD;
+         color: #ffffff;
+         text-decoration: none;
+         border-radius: 6px;
+         font-weight: bold;
+         margin-top: 12px;
+       ">
+      Verify Email
+    </a>
+
+    <p style="margin-top: 20px; font-size: 12px; color: #666;">
+      If you didn’t create an account, you can safely ignore this email.
+    </p>
+  </div>
+`,
+  });
   res.status(201).json({
-    message: "Registration successful",
-    user: newUser,
-    password: passwordHash,
+    message: "Registration successful. Check your email.",
   });
 };
+
+export const verifyEmail = async (req, res) => {
+  const { token } = req.query;
+
+  if (!token) {
+    throw createHttpError(400, "Verification token is required");
+  }
+
+  const tokenHash = hashTokenVerify(token);
+
+  const record = await EmailVerification.findOne({
+    tokenHash,
+    expiredAt: { $gt: Date.now() },
+  });
+
+  if (!record) {
+    throw createHttpError(400, "Invalid or expired verification token");
+  }
+
+  const user = await User.findById(record.userId);
+  if (!user) {
+    throw createHttpError(404, "User not found");
+  }
+
+  user.emailVerified = true;
+  await user.save();
+
+  await EmailVerification.deleteOne({ _id: record._id });
+
+  const session = await createSession(user._id);
+  setSessionCookies(res, session);
+
+  res.status(200).json({
+    message: "Email verified successfully",
+    user: {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+    },
+  });
+};
+
 
 export const authLogin = async (req, res, next) => {
   const { password, email } = req.body;
@@ -46,7 +151,9 @@ export const authLogin = async (req, res, next) => {
   if (!isMatch) {
     throw createHttpError(400, "Email or password is wrong");
   }
-
+  if (!user.emailVerified) {
+    throw createHttpError(403, "Email not verified");
+  }
   const newSession = await createSession(user._id);
   setSessionCookies(res, newSession);
 

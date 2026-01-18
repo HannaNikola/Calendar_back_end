@@ -20,6 +20,10 @@ const userSchema = new Schema(
       trim: true,
       lowercase: true,
     },
+    emailVerified: {
+      type: Boolean,
+      default: false
+    },
     // avatar: {
     //   type: String,
     //   default: null,
@@ -36,3 +40,10 @@ userSchema.methods.toJSON = function () {
 };
 
 export default model("User", userSchema);
+
+
+
+
+
+
+

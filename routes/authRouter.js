@@ -2,6 +2,7 @@ import express from "express";
 import { registerShema, loginShema } from "../schemas/authSchema.js";
 import {
   authRegister,
+  verifyEmail,
   authLogin,
   authLogout,
   authLogoutAll,
@@ -23,8 +24,6 @@ authRouter.post("/logout-all", tokenAuth, authLogoutAll);
 authRouter.get("/current", tokenAuth, authCurrent);
 authRouter.delete("/delete", tokenAuth, authDeleteUser);
 
+authRouter.get("/verify-email", verifyEmail);
+
 export default authRouter;
-
-
-
-
