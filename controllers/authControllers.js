@@ -83,7 +83,7 @@ export const authRegister = async (req, res) => {
           <h2>Confirm your email</h2>
           <p>Click the button below to verify your email:</p>
 
-           <a href="${process.env.FRONTEND_URL}/verify-email?token=${token}">
+           <a href="${process.env.FRONTEND_URL}/verify-email?token=${token}"
              style="padding:12px 24px;background:#0000CD;color:white;text-decoration:none;border-radius:6px;">
             Verify Email
           </a>
@@ -175,6 +175,8 @@ export const verifyEmail = async (req, res) => {
 
   return res.redirect(`${process.env.FRONTEND_URL}/calendar`);
 };
+
+
 
 
 export const authLogin = async (req, res, next) => {
