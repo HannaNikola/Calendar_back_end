@@ -79,18 +79,33 @@ export const authRegister = async (req, res) => {
       to: newUser.email,
       subject: "Confirm your email",
       html: `
-        <div style="font-family: Arial;">
+        <div style="font-family: Arial, sans-serif; line-height: 1.5;">
           <h2>Confirm your email</h2>
           <p>Click the button below to verify your email:</p>
 
-           <a href="${process.env.FRONTEND_URL}/verify-email?token=${token}"
-             style="padding:12px 24px;background:#0000CD;color:white;text-decoration:none;border-radius:6px;">
+          <a
+            href="https://calendar-back-end-s3b2.onrender.com/api/users/verify-email?token=${token}"
+            style="
+              display:inline-block;
+              padding:12px 24px;
+              background:#0000CD;
+              color:white;
+              text-decoration:none;
+              border-radius:6px;
+              font-weight:bold;
+            "
+          >
             Verify Email
           </a>
+
+          <p style="margin-top:16px;font-size:12px;color:#666;">
+            If you didn’t create an account, you can safely ignore this email.
+          </p>
         </div>
       `,
     });
   } catch (err) {
+  
     await User.findByIdAndDelete(newUser._id);
     await EmailVerification.deleteOne({ userId: newUser._id });
     throw createHttpError(500, "Failed to send verification email");
@@ -100,6 +115,7 @@ export const authRegister = async (req, res) => {
     message: "Registration successful. Check your email.",
   });
 };
+
 
 // export const verifyEmail = async (req, res) => {
 //   const { token } = req.query;
@@ -173,9 +189,9 @@ export const verifyEmail = async (req, res) => {
   const session = await createSession(user._id);
   setSessionCookies(res, session);
 
+  
   return res.redirect(`${process.env.FRONTEND_URL}/calendar`);
 };
-
 
 
 
