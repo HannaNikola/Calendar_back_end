@@ -13,7 +13,6 @@ import {
 import EmailVerification from "../models/emailVerifycationModel.js";
 import { sendEmail } from "../helpers/sendEmail.js";
 
-
 // export const authRegister = async (req, res, next) => {
 //   const { password, email, name } = req.body;
 
@@ -43,13 +42,13 @@ import { sendEmail } from "../helpers/sendEmail.js";
 export const authRegister = async (req, res) => {
   const { email, password, name } = req.body;
 
-  const existingUser = await User.findOne({ email });
+  const existingUser = await User.exists({ email });
 
   if (existingUser) {
     if (!existingUser.emailVerified) {
       throw createHttpError(
         409,
-        "Email already registered but not verified. Check your email."
+        "Email already registered but not verified. Check your email.",
       );
     }
 
@@ -105,7 +104,6 @@ export const authRegister = async (req, res) => {
       `,
     });
   } catch (err) {
-  
     await User.findByIdAndDelete(newUser._id);
     await EmailVerification.deleteOne({ userId: newUser._id });
     throw createHttpError(500, "Failed to send verification email");
@@ -115,48 +113,6 @@ export const authRegister = async (req, res) => {
     message: "Registration successful. Check your email.",
   });
 };
-
-
-// export const verifyEmail = async (req, res) => {
-//   const { token } = req.query;
-
-//   if (!token) {
-//     throw createHttpError(400, "Verification token is required");
-//   }
-
-//   const tokenHash = hashTokenVerify(token);
-
-//   const record = await EmailVerification.findOne({
-//     tokenHash,
-//     expiredAt: { $gt: Date.now() },
-//   });
-
-//   if (!record) {
-//     throw createHttpError(400, "Invalid or expired verification token");
-//   }
-
-//   const user = await User.findById(record.userId);
-//   if (!user) {
-//     throw createHttpError(404, "User not found");
-//   }
-
-//   user.emailVerified = true;
-//   await user.save();
-
-//   await EmailVerification.deleteOne({ _id: record._id });
-
-//   const session = await createSession(user._id);
-//   setSessionCookies(res, session);
-
-//   res.status(200).json({
-//     message: "Email verified successfully",
-//     user: {
-//       id: user._id,
-//       email: user.email,
-//       name: user.name,
-//     },
-//   });
-// };
 
 export const verifyEmail = async (req, res) => {
   const { token } = req.query;
@@ -189,11 +145,8 @@ export const verifyEmail = async (req, res) => {
   const session = await createSession(user._id);
   setSessionCookies(res, session);
 
-  
   return res.redirect(`${process.env.FRONTEND_URL}/calendar`);
 };
-
-
 
 export const authLogin = async (req, res, next) => {
   const { password, email } = req.body;
@@ -335,7 +288,7 @@ export const authDeleteUser = async (req, res, next) => {
 
     const deletedSessions = await Session.deleteMany({ userId });
     console.log(
-      `Deleted ${deletedSessions.deletedCount} sessions for user ${userId}`
+      `Deleted ${deletedSessions.deletedCount} sessions for user ${userId}`,
     );
 
     res.clearCookie("accessToken", {
