@@ -39,6 +39,8 @@ import { sendEmail } from "../helpers/sendEmail.js";
 //   });
 // };
 
+const BACKEND_URL = process.env.BACKEND_URL;
+
 export const authRegister = async (req, res) => {
   const { email, password, name } = req.body;
 
@@ -83,7 +85,7 @@ export const authRegister = async (req, res) => {
           <p>Click the button below to verify your email:</p>
 
           <a
-            href="https://calendar-back-end-s3b2.onrender.com/api/users/verify-email?token=${token}"
+            href="${BACKEND_URL}/api/users/verify-email?token=${token}"
             style="
               display:inline-block;
               padding:12px 24px;
@@ -106,6 +108,7 @@ export const authRegister = async (req, res) => {
   } catch (err) {
     await User.findByIdAndDelete(newUser._id);
     await EmailVerification.deleteOne({ userId: newUser._id });
+
     throw createHttpError(500, "Failed to send verification email");
   }
 
