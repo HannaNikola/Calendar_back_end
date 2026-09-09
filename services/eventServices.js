@@ -1,7 +1,6 @@
 import Event from "../models/eventModel.js";
 import Todo from "../models/todoModel.js";
 
-
 async function listEvents(ownerId) {
   const data = await Event.find({ owner: ownerId }).populate("todoId");
 
@@ -10,7 +9,7 @@ async function listEvents(ownerId) {
 
 async function getEventById({ idEvent, owner }) {
   const eventId = await Event.findOne({ _id: idEvent, owner }).populate(
-    "todoId"
+    "todoId",
   );
 
   return eventId;
