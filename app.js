@@ -71,52 +71,89 @@ import { cleanExpiredSessions } from "./helpers/cleanExpiredSession.js";
 // });
 
 
+
 const app = express();
+
 const PORT = process.env.PORT || 2000;
 
 app.use(morgan("tiny"));
 
-// Базовый список разрешенных доменов
+// Разрешенные frontend-домены
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://app--calendar--jjd2yny5y5zz.code.run",
+  "https://calendar-rho-seven.vercel.app",
   "https://page.gripe",
   "https://www.page.gripe",
 ];
 
-// Подтягиваем FRONTEND_URL из переменных Northflank, если она задана
-if (process.env.FRONTEND_URL) {
-  process.env.FRONTEND_URL.split(",").forEach((url) => {
-    const cleanUrl = url.trim().replace(/\/$/, "");
-    if (cleanUrl && !allowedOrigins.includes(cleanUrl)) {
-      allowedOrigins.push(cleanUrl);
-    }
-  });
-}
-
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
+      // Разрешаем запросы без Origin
+      // (например, некоторые серверные запросы)
+      if (!origin) {
+        return callback(null, true);
+      }
 
-      const normalizedOrigin = origin.replace(/\/$/, "");
-
-      // Проверяем: совпадает ли с массивом ИЛИ заканчивается на .vercel.app ИЛИ заканчивается на .page.gripe
-      const isAllowed =
-        allowedOrigins.includes(normalizedOrigin) ||
-        /\.vercel\.app$/.test(normalizedOrigin) ||
-        /\.page\.gripe$/.test(normalizedOrigin);
-
-      if (isAllowed) {
+      if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
       console.log("Blocked CORS:", origin);
-      return callback(null, false);
+      return callback(new Error("Not allowed by CORS"));
     },
 
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  }),
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
+  })
 );
+
+app.use(cookieParser());
+app.use(express.json());
+
+// Routes
+app.use("/api/users", authRouter);
+app.use("/api/events", eventRouter);
+app.use("/api/todo/overdue", filterObjectRouter);
+app.use("/api/todo", todoRouter);
+
+// 404
+app.use((_, res) => {
+  res.status(404).json({
+    message: "Route not found",
+    status: "error",
+  });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error("error:", err.message);
+
+  res.status(err.status || 500).json({
+    message: err.message || "Server error",
+  });
+});
+
+// Очистка просроченных сессий
+cleanExpiredSessions().catch(console.error);
+
+setInterval(cleanExpiredSessions, 1000 * 60 * 60);
+
+// Запуск сервера
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
