@@ -180,12 +180,13 @@ export const authLogin = async (req, res, next) => {
 };
 
 export const authCurrent = async (req, res) => {
-  const { _id, email } = req.user;
+  const { _id, email, name } = req.user;
 
   res.status(200).json({
     user: {
       id: _id,
       email,
+      name
     },
   });
 };
