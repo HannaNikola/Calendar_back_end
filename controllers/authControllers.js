@@ -5,7 +5,7 @@ import { Session } from "../models/sessionModel.js";
 import createHttpError from "http-errors";
 import { createSession } from "../helpers/createSession.js";
 import { setSessionCookies } from "../helpers/setSessionCookies.js";
-import { FIFTEEN_MINUTES, ONE_DAY } from "../constants/index.js";
+import { FIFTEEN_MINUTES, TWO_WEEKS } from "../constants/index.js";
 import {
   generateTokenVerify,
   hashTokenVerify,
@@ -192,6 +192,15 @@ export const authCurrent = async (req, res) => {
 };
 
 export const authRefresh = async (req, res, next) => {
+  
+  console.log("REFRESH COOKIE CHECK:", {
+    origin: req.headers.origin,
+    host: req.headers.host,
+    hasSessionId: Boolean(req.cookies?.sessionId),
+    hasRefreshToken: Boolean(req.cookies?.refreshToken),
+  });
+
+  
   const { sessionId, refreshToken } = req.cookies;
 
   if (!sessionId || !refreshToken) {
@@ -216,7 +225,7 @@ export const authRefresh = async (req, res, next) => {
   session.accessTokenValidUntil = Date.now() + FIFTEEN_MINUTES;
 
   session.refreshToken = crypto.randomBytes(30).toString("base64");
-  session.refreshTokenValidUntil = Date.now() + ONE_DAY;
+  session.refreshTokenValidUntil = Date.now() + TWO_WEEKS;
 
   await session.save();
 

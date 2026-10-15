@@ -1,4 +1,4 @@
-import { FIFTEEN_MINUTES, ONE_DAY } from "../constants/index.js";
+import { FIFTEEN_MINUTES, TWO_WEEKS } from "../constants/index.js";
 
 export const setSessionCookies = (res, session)=>{
     res.cookie("accessToken", session.accessToken, {
@@ -12,13 +12,13 @@ export const setSessionCookies = (res, session)=>{
     httpOnly: true,
     secure: true,
     sameSite: "none",
-    maxAge: ONE_DAY,
+    maxAge: TWO_WEEKS,
   });
 
   res.cookie("sessionId", session._id, {
     httpOnly: true,
     secure: true,
     sameSite: "none",
-    maxAge: ONE_DAY,
+    maxAge: TWO_WEEKS,
   })
 }

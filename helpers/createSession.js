@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { Session } from "../models/sessionModel.js";
-import { FIFTEEN_MINUTES, ONE_DAY } from "../constants/index.js";
+import { FIFTEEN_MINUTES, TWO_WEEKS } from "../constants/index.js";
 
 export const createSession = (userId) => {
   const accessToken = crypto.randomBytes(30).toString("base64");
@@ -11,6 +11,6 @@ export const createSession = (userId) => {
     accessToken,
     refreshToken,
     accessTokenValidUntil: Date.now() + FIFTEEN_MINUTES,
-    refreshTokenValidUntil: Date.now() + ONE_DAY,
+    refreshTokenValidUntil: Date.now() + TWO_WEEKS,
   });
 };
