@@ -1,7 +1,6 @@
 import Todo from "../models/todoModel.js";
 import Event from "../models/eventModel.js";
 
-
 async function listTodo(ownerId) {
   const data = await Todo.find({ owner: ownerId })
     .sort({ end: 1 })
@@ -38,7 +37,7 @@ async function addTodo({
       23,
       59,
       59,
-      999
+      999,
     );
     const endTime = end || endOfDay;
 
@@ -63,7 +62,7 @@ async function addTodo({
     isCompletedTask,
     start: start || event.start,
     end: end || event.end,
-    allDay,
+    allDay: allDay ?? event.allDay ?? false,
     addTask,
     eventId: event._id,
     owner,
@@ -86,6 +85,9 @@ async function updateTodoById({ id, owner, body }) {
     if (body.title !== undefined) eventUpdate.title = body.title;
     if (body.start !== undefined) eventUpdate.start = body.start;
     if (body.end !== undefined) eventUpdate.end = body.end;
+    if (body.allDay !== undefined) {
+      eventUpdate.allDay = body.allDay;
+    }
     if (body.description !== undefined)
       eventUpdate.description = body.description;
     if (body.isCompletedTask !== undefined)
