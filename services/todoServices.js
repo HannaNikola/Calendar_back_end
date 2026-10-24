@@ -106,23 +106,35 @@ async function updateTodoById({ id, owner, body }) {
 
 async function removeTodo({ id, owner }) {
   const data = await Todo.findOneAndDelete({ _id: id, owner });
-  if (data?.eventId) {
-    await Event.findByIdAndUpdate(data.eventId, {
-      todoId: null,
-      description: "",
-      isCompletedTask: false,
-      addTask: false,
-    });
+
+  if (!data) {
+    return null;
   }
 
-  return data;
+  if (data.eventId) {
+    await Event.findByIdAndUpdate(
+      {
+        _id: data.eventId,
+        owner,
+      },
+      {
+        $set: {
+          todoId: null,
+          addTask: false,
+          description: "",
+          isCompletedTask: false,
+        },
+      },
+    );
+  }
+return data;
 }
 
-const todoServices = {
+
+export default {
   listTodo,
   getTodoById,
   addTodo,
   updateTodoById,
   removeTodo,
 };
-export default todoServices;

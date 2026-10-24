@@ -59,16 +59,28 @@ export const deleteTodo = async (req, res, next) => {
   try {
     const { _id: userId } = req.user;
     const { id } = req.params;
-    const data = await todoServices.removeTodo({ id, owner: userId });
+
+    const data = await todoServices.removeTodo({
+      id,
+      owner: userId,
+    });
 
     if (!data) {
       throw httpError(404, "todo not found");
     }
+
     res.status(200).json({
       message: "success",
-      data: data,
+      data,
     });
   } catch (error) {
     next(error);
   }
 };
+
+
+
+
+
+
+
