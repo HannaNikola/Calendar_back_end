@@ -55,9 +55,60 @@ async function addEvent({
   return data;
 }
 
+// async function updateEventById({ id, owner, body }) {
+//   const event = await Event.findOne({ _id: id, owner });
+//   if (!event) throw new Error("Event not found");
+
+//   const allowed = [
+//     "title",
+//     "description",
+//     "start",
+//     "end",
+//     "allDay",
+//     "addTask",
+//     "isCompletedTask",
+//     "isImportant",
+//     "colorEvent",
+//     "repeat",
+//     "reminder",
+//   ];
+
+//   for (const key of allowed) {
+//     if (body[key] !== undefined) {
+//       event[key] = body[key];
+//     }
+//   }
+
+//   await event.save();
+
+//   if (event.todoId) {
+//     const todoUpdate = {};
+
+//     if (body.title !== undefined) todoUpdate.title = body.title;
+//     if (body.start !== undefined) todoUpdate.start = body.start;
+//     if (body.end !== undefined) todoUpdate.end = body.end;
+//     if (body.description !== undefined)
+//       todoUpdate.description = body.description;
+//     if (body.isCompletedTask !== undefined)
+//       todoUpdate.isCompletedTask = body.isCompletedTask;
+//     if (body.isImportant !== undefined)
+//       todoUpdate.isImportant = body.isImportant;
+
+//     if (Object.keys(todoUpdate).length > 0) {
+//       await Todo.findByIdAndUpdate(event.todoId, todoUpdate, { new: true });
+//     }
+//   }
+
+//   return Event.findOne({ _id: id, owner }).populate("todoId");
+// }
+
+
 async function updateEventById({ id, owner, body }) {
   const event = await Event.findOne({ _id: id, owner });
-  if (!event) throw new Error("Event not found");
+
+  if (!event) {
+    throw new Error("Event not found");
+  }
 
   const allowed = [
     "title",
@@ -73,32 +124,73 @@ async function updateEventById({ id, owner, body }) {
     "reminder",
   ];
 
+  // Обновляем поля Event
   for (const key of allowed) {
     if (body[key] !== undefined) {
       event[key] = body[key];
     }
   }
 
+  // При завершении очищаем описание только у Event
+  if (body.isCompletedTask === true) {
+    event.description = "";
+    event.addTask = false;
+  }
+
   await event.save();
 
+  // Синхронизируем связанные поля Todo
   if (event.todoId) {
     const todoUpdate = {};
 
-    if (body.title !== undefined) todoUpdate.title = body.title;
-    if (body.start !== undefined) todoUpdate.start = body.start;
-    if (body.end !== undefined) todoUpdate.end = body.end;
-    if (body.description !== undefined)
+    if (body.title !== undefined) {
+      todoUpdate.title = body.title;
+    }
+
+    if (body.start !== undefined) {
+      todoUpdate.start = body.start;
+    }
+
+    if (body.end !== undefined) {
+      todoUpdate.end = body.end;
+    }
+
+    if (body.allDay !== undefined) {
+      todoUpdate.allDay = body.allDay;
+    }
+
+    // Описание Todo сохраняем
+    if (body.description !== undefined) {
       todoUpdate.description = body.description;
-    if (body.isCompletedTask !== undefined)
+    }
+
+    if (body.isCompletedTask !== undefined) {
       todoUpdate.isCompletedTask = body.isCompletedTask;
-    if (body.isImportant !== undefined)
+    }
+
+    if (body.isImportant !== undefined) {
       todoUpdate.isImportant = body.isImportant;
+    }
+
+    if (body.addTask !== undefined) {
+      todoUpdate.addTask = body.addTask;
+    }
+
+    // Завершённая задача больше не прикреплена к Event
+    if (body.isCompletedTask === true) {
+      todoUpdate.addTask = false;
+    }
 
     if (Object.keys(todoUpdate).length > 0) {
-      await Todo.findByIdAndUpdate(event.todoId, todoUpdate, { new: true });
+      await Todo.findOneAndUpdate(
+        { _id: event.todoId, owner },
+        { $set: todoUpdate },
+        { new: true },
+      );
     }
   }
 
+  // Возвращаем обновлённый Event вместе со связанным Todo
   return Event.findOne({ _id: id, owner }).populate("todoId");
 }
 
