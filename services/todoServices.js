@@ -100,6 +100,7 @@ async function updateTodoById({ id, owner, body }) {
 
       if (body.isCompletedTask === true) {
         eventUpdate.description = "";
+        eventUpdate.addTask = false;
       }
     }
 
