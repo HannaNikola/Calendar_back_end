@@ -79,28 +79,47 @@ async function updateTodoById({ id, owner, body }) {
   });
 
   if (!data) throw new Error("Todo not found");
+
   if (data.eventId) {
     const eventUpdate = {};
 
     if (body.title !== undefined) eventUpdate.title = body.title;
     if (body.start !== undefined) eventUpdate.start = body.start;
     if (body.end !== undefined) eventUpdate.end = body.end;
+
     if (body.allDay !== undefined) {
       eventUpdate.allDay = body.allDay;
     }
-    if (body.description !== undefined)
+
+    if (body.description !== undefined) {
       eventUpdate.description = body.description;
-    if (body.isCompletedTask !== undefined)
+    }
+
+    if (body.isCompletedTask !== undefined) {
       eventUpdate.isCompletedTask = body.isCompletedTask;
-    if (body.isImportant !== undefined)
+
+      if (body.isCompletedTask === true) {
+        eventUpdate.description = "";
+      }
+    }
+
+    if (body.isImportant !== undefined) {
       eventUpdate.isImportant = body.isImportant;
-    if (body.addTask !== undefined) eventUpdate.addTask = body.addTask;
+    }
+
+    if (body.addTask !== undefined) {
+      eventUpdate.addTask = body.addTask;
+    }
+
     if (Object.keys(eventUpdate).length > 0) {
-      await Event.findOneAndUpdate({ _id: data.eventId, owner }, eventUpdate, {
-        new: true,
-      });
+      await Event.findOneAndUpdate(
+        { _id: data.eventId, owner },
+        { $set: eventUpdate },
+        { new: true },
+      );
     }
   }
+
   return data;
 }
 
@@ -127,9 +146,8 @@ async function removeTodo({ id, owner }) {
       },
     );
   }
-return data;
+  return data;
 }
-
 
 export default {
   listTodo,
