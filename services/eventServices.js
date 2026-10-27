@@ -196,9 +196,9 @@ async function updateEventById({ id, owner, body }) {
 
 async function removeEvent({ id, owner }) {
   const data = await Event.findOneAndDelete({ _id: id, owner });
-  if (data?.todoId) {
-    await Todo.findByIdAndDelete(data.todoId);
-  }
+  // if (data?.todoId) {
+  //   await Todo.findByIdAndDelete(data.todoId);
+  // }
   return data;
 }
 
