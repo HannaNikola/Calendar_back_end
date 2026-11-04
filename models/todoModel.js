@@ -3,11 +3,11 @@ import { Schema, model } from "mongoose";
 
 const todoSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: [true, "Set title for todo"],
-      trim: true,
-    },
+    // title: {
+    //   type: String,
+    //   required: [true, "Set title for todo"],
+    //   trim: true,
+    // },
     description: {
       type: String,
       default: "",
@@ -35,6 +35,7 @@ const todoSchema = new mongoose.Schema(
     eventId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "event",
+       default: null,
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
@@ -46,7 +47,8 @@ const todoSchema = new mongoose.Schema(
 );
 
 todoSchema.virtual("isOverdue").get(function () {
-  return this.end && new Date(this.end) < new Date() && !this.isCompleted;
+  // return this.end && new Date(this.end) < new Date() && !this.isCompleted;
+  return this.end && new Date(this.end) < new Date() && !this.isCompletedTask;
 });
 todoSchema.set("toJSON", { virtuals: true });
 todoSchema.set("toObject", { virtuals: true });
