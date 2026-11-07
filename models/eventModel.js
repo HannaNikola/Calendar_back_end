@@ -31,10 +31,12 @@ const eventSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    todoId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "todo",
-    },
+    todoIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "todo",
+      },
+    ],
     colorEvent: {
       type: String,
       enum: ["none", "home", "work", "isektor"],
@@ -70,7 +72,7 @@ const eventSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { versionKey: false, timestamps: true }
+  { versionKey: false, timestamps: true },
 );
 
 const Event = model("event", eventSchema);

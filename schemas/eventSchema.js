@@ -29,12 +29,33 @@ export const createEventSchema = {
 
 
 
+async function removeTodo({ id, owner }) {
+  const data = await Todo.findOneAndDelete({ _id: id, owner });
 
+  if (!data) {
+    return null;
+  }
 
+  if (data.eventId) {
+    await Event.findOneAndUpdate(
+      {
+        _id: data.eventId,
+        owner,
+        todoId: data._id,
+      },
+      {
+        $set: {
+          todoId: null,
+          addTask: false,
+          isCompletedTask: false,
+          description: "",
+        },
+      },
+    );
+  }
 
-
-
-
+  return data;
+}
 
 
 

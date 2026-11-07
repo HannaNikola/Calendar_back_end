@@ -4,14 +4,78 @@ import Event from "../models/eventModel.js";
 async function listTodo(ownerId) {
   const data = await Todo.find({ owner: ownerId })
     .sort({ end: 1 })
-    .populate("eventId");
+    .populate("eventId", "title");
   return data;
 }
-
 async function getTodoById({ id, owner }) {
-  const todoId = await Todo.findOne({ _id: id, owner }).populate("eventId");
+  const todoId = await Todo.findOne({ _id: id, owner }).populate(
+    "eventId",
+    "title",
+  );
   return todoId;
 }
+
+// async function addTodo({
+//   title,
+//   description,
+//   isImportant,
+//   isCompletedTask,
+//   start,
+//   end,
+//   allDay,
+//   addTask,
+//   eventId,
+//   owner,
+// }) {
+//   let event;
+
+//   if (!eventId) {
+//     const now = new Date();
+
+//     const endOfDay = new Date(
+//       now.getFullYear(),
+//       now.getMonth(),
+//       now.getDate(),
+//       23,
+//       59,
+//       59,
+//       999,
+//     );
+//     const endTime = end || endOfDay;
+
+//     event = await Event.create({
+//       title,
+//       start: start || now,
+//       end: endTime,
+//       description,
+//       isImportant,
+//       addTask,
+//       owner,
+//     });
+//   } else {
+//     event = await Event.findOne({ _id: eventId, owner });
+//     if (!event) throw new Error("Event not found");
+//   }
+
+//   const todo = await Todo.create({
+//     title,
+//     description,
+//     isImportant,
+//     isCompletedTask,
+//     start: start || event.start,
+//     end: end || event.end,
+//     allDay: allDay ?? event.allDay ?? false,
+//     addTask,
+//     eventId: event._id,
+//     owner,
+//   });
+
+//   await Event.findByIdAndUpdate(event._id, { todoId: todo._id });
+
+//   return todo;
+// }
+
+// план б
 
 async function addTodo({
   title,
@@ -25,52 +89,48 @@ async function addTodo({
   eventId,
   owner,
 }) {
-  let event;
+  let event = null;
 
-  if (!eventId) {
-    const now = new Date();
-
-    const endOfDay = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      23,
-      59,
-      59,
-      999,
-    );
-    const endTime = end || endOfDay;
-
-    event = await Event.create({
-      title,
-      start: start || now,
-      end: endTime,
-      description,
-      isImportant,
-      addTask,
+  if (eventId) {
+    event = await Event.findOne({
+      _id: eventId,
       owner,
     });
-  } else {
-    event = await Event.findOne({ _id: eventId, owner });
-    if (!event) throw new Error("Event not found");
   }
 
+
+  if (!event) {
+    throw new Error("Event not found");
+  }
+
+  const todoCount = await Todo.countDocuments({
+    eventId: event._id,
+    owner,
+  })
+
+  if(todoCount >= 3){
+    throw new Error("An event can have a maximum of 3 tasks")
+  }
   const todo = await Todo.create({
     title,
     description,
     isImportant,
     isCompletedTask,
-    start: start || event.start,
-    end: end || event.end,
-    allDay: allDay ?? event.allDay ?? false,
+    start: start ?? event?.start,
+    end: end ?? event?.end,
+    allDay: allDay ?? event?.allDay ?? false,
     addTask,
-    eventId: event._id,
+    eventId: event?._id ?? null,
     owner,
   });
+  if (event) {
+    await Event.findByIdAndUpdate(
+      { _id: event._id, owner },
+      { $set: { todoId: todo._id } },
+    );
+  }
 
-  await Event.findByIdAndUpdate(event._id, { todoId: todo._id });
-
-  return todo;
+  return Todo.findById(todo._id).populate("eventId", "title");
 }
 
 async function updateTodoById({ id, owner, body }) {
@@ -124,124 +184,7 @@ async function updateTodoById({ id, owner, body }) {
   return data;
 }
 
-// async function removeTodo({ id, owner }) {
-//   const data = await Todo.findOneAndDelete({ _id: id, owner });
-
-//   if (!data) {
-//     return null;
-//   }
-
-//   if (data.eventId) {
-//     await Event.findByIdAndUpdate(
-//       {
-//         _id: data.eventId,
-//         owner,
-//       },
-//       {
-//         $set: {
-//           todoId: null,
-//           addTask: false,
-//           description: "",
-//           isCompletedTask: false,
-//         },
-//       },
-//     );
-//   }
-//   return data;
-// }
-
-// export default {
-//   listTodo,
-//   getTodoById,
-//   addTodo,
-//   updateTodoById,
-//   removeTodo,
-// };
-
-// async function listTodo(ownerId) {
-//   const data = await Todo.find({ owner: ownerId })
-//     .sort({ end: 1 })
-//     .populate("eventId");
-//   return data;
-// }
-
-// async function getTodoById({ id, owner }) {
-//   const todoId = await Todo.findOne({ _id: id, owner }).populate("eventId");
-//   return todoId;
-// }
-
-// async function addTodo({
-//   description,
-//   isImportant,
-//   isCompletedTask,
-//   start,
-//   end,
-//   allDay,
-//   addTask,
-//   eventId,
-//   owner,
-// }) {
-//   let event = null;
-
-//   if (eventId) {
-//     event = await Event.findOne({
-//       _id: eventId,
-//       owner,
-//     });
-//   }
-//   // if (!eventId) {
-//   //   const now = new Date();
-
-//   //   const endOfDay = new Date(
-//   //     now.getFullYear(),
-//   //     now.getMonth(),
-//   //     now.getDate(),
-//   //     23,
-//   //     59,
-//   //     59,
-//   //     999,
-//   //   );
-//   //   const endTime = end || endOfDay;
-
-//   //   event = await Event.create({
-//   //     title,
-//   //     start: start || now,
-//   //     end: endTime,
-//   //     description,
-//   //     isImportant,
-//   //     addTask,
-//   //     owner,
-//   //   });
-//   // } else {
-//   //   event = await Event.findOne({ _id: eventId, owner });
-
-//   //   if (!event) throw new Error("Event not found");
-//   // }
-
-//   if (!event) {
-//     throw new Error("Event not found");
-//   }
-
-//   const todo = await Todo.create({
-//     description,
-//     isImportant,
-//     isCompletedTask,
-//     start: start ?? event?.start,
-//     end: end ?? event?.end,
-//     allDay: allDay ?? event?.allDay ?? false,
-//     addTask,
-//     eventId: event?._id ?? null,
-//     owner,
-//   });
-//   if (event) {
-//     await Event.findByIdAndUpdate(
-//       { _id: event._id, owner },
-//       { $set: { todoId: todo._id } },
-//     );
-//   }
-
-//   return Todo.findById(todo._id).populate("eventId");
-// }
+// план б
 
 // async function updateTodoById({ id, owner, body }) {
 //   const data = await Todo.findOneAndUpdate(
@@ -286,6 +229,33 @@ async function updateTodoById({ id, owner, body }) {
 //   return data;
 // }
 
+// async function removeTodo({ id, owner }) {
+//   const data = await Todo.findOneAndDelete({ _id: id, owner });
+
+//   if (!data) {
+//     return null;
+//   }
+
+//   if (data.eventId) {
+//     await Event.findByIdAndUpdate(
+//       {
+//         _id: data.eventId,
+//         owner,
+//       },
+//       {
+//         $set: {
+//           todoId: null,
+//           addTask: false,
+//           description: "",
+//           isCompletedTask: false,
+//         },
+//       },
+//     );
+//   }
+//   return data;
+// }
+
+// план б
 async function removeTodo({ id, owner }) {
   const data = await Todo.findOneAndDelete({ _id: id, owner });
 
@@ -294,7 +264,7 @@ async function removeTodo({ id, owner }) {
   }
 
   if (data.eventId) {
-    await Event.findByIdAndUpdate(
+    await Event.findOneAndUpdate(
       {
         _id: data.eventId,
         owner,
@@ -305,6 +275,7 @@ async function removeTodo({ id, owner }) {
           todoId: null,
           addTask: false,
           isCompletedTask: false,
+          description: "",
         },
       },
     );
