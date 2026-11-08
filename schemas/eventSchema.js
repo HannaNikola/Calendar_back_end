@@ -10,7 +10,6 @@ export const createEventSchema = {
     addTask: Joi.boolean().optional(),
     isCompletedTask: Joi.boolean().optional(),
     isImportant: Joi.boolean().optional(),
-    todoIds: Joi.string().hex().length(24),
     colorEvent: Joi.string(),
     repeat: Joi.string()
       .valid("none", "daily", "workday", "weekend", "yearly")

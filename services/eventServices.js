@@ -24,7 +24,6 @@ async function addEvent({
   addTask,
   isCompletedTask,
   isImportant,
-  todoIds,
   colorEvent,
   repeat,
   reminder,
@@ -45,7 +44,6 @@ async function addEvent({
     addTask,
     isCompletedTask,
     isImportant,
-    todoIds: todoIds || null,
     colorEvent,
     repeat,
     reminder,
@@ -101,7 +99,6 @@ async function addEvent({
 
 //   return Event.findOne({ _id: id, owner }).populate("todoIds");
 // }
-
 
 async function updateEventById({ id, owner, body }) {
   const event = await Event.findOne({ _id: id, owner });
@@ -196,12 +193,18 @@ async function updateEventById({ id, owner, body }) {
 
 async function removeEvent({ id, owner }) {
   const data = await Event.findOneAndDelete({ _id: id, owner });
-  // if (data?.todoIds) {
-  //   await Todo.findByIdAndDelete(data.todoIds);
-  // }
+
+  if (!data) {
+    return null;
+  }
+
+  await Todo.updateMany(
+    { eventId: data._id, owner },
+    { $set: { eventId: null } },
+  );
+
   return data;
 }
-
 const eventServices = {
   listEvents,
   addEvent,

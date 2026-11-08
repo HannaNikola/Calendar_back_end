@@ -77,17 +77,3 @@ export const deleteTodo = async (req, res, next) => {
     next(error);
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-

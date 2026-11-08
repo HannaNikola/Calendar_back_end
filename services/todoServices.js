@@ -15,68 +15,6 @@ async function getTodoById({ id, owner }) {
   return todoId;
 }
 
-// async function addTodo({
-//   title,
-//   description,
-//   isImportant,
-//   isCompletedTask,
-//   start,
-//   end,
-//   allDay,
-//   addTask,
-//   eventId,
-//   owner,
-// }) {
-//   let event;
-
-//   if (!eventId) {
-//     const now = new Date();
-
-//     const endOfDay = new Date(
-//       now.getFullYear(),
-//       now.getMonth(),
-//       now.getDate(),
-//       23,
-//       59,
-//       59,
-//       999,
-//     );
-//     const endTime = end || endOfDay;
-
-//     event = await Event.create({
-//       title,
-//       start: start || now,
-//       end: endTime,
-//       description,
-//       isImportant,
-//       addTask,
-//       owner,
-//     });
-//   } else {
-//     event = await Event.findOne({ _id: eventId, owner });
-//     if (!event) throw new Error("Event not found");
-//   }
-
-//   const todo = await Todo.create({
-//     title,
-//     description,
-//     isImportant,
-//     isCompletedTask,
-//     start: start || event.start,
-//     end: end || event.end,
-//     allDay: allDay ?? event.allDay ?? false,
-//     addTask,
-//     eventId: event._id,
-//     owner,
-//   });
-
-//   await Event.findByIdAndUpdate(event._id, { todoId: todo._id });
-
-//   return todo;
-// }
-
-// план б
-
 async function addTodo({
   title,
   description,
@@ -139,8 +77,6 @@ async function addTodo({
 
   return result;
 }
-
-
 
 async function updateTodoById({ id, owner, body }) {
   const data = await Todo.findOneAndUpdate({ _id: id, owner }, body, {
@@ -238,33 +174,6 @@ async function updateTodoById({ id, owner, body }) {
 //   return data;
 // }
 
-// async function removeTodo({ id, owner }) {
-//   const data = await Todo.findOneAndDelete({ _id: id, owner });
-
-//   if (!data) {
-//     return null;
-//   }
-
-//   if (data.eventId) {
-//     await Event.findByIdAndUpdate(
-//       {
-//         _id: data.eventId,
-//         owner,
-//       },
-//       {
-//         $set: {
-//           todoId: null,
-//           addTask: false,
-//           description: "",
-//           isCompletedTask: false,
-//         },
-//       },
-//     );
-//   }
-//   return data;
-// }
-
-// план б
 async function removeTodo({ id, owner }) {
   const data = await Todo.findOneAndDelete({ _id: id, owner });
 
