@@ -96,21 +96,21 @@ async function addTodo({
       _id: eventId,
       owner,
     });
+
+    if (!event) {
+      throw new Error("Event not found");
+    }
+
+    const todoCount = await Todo.countDocuments({
+      eventId: event._id,
+      owner,
+    });
+
+    if (todoCount >= 3) {
+      throw new Error("An event can have a maximum of 3 tasks");
+    }
   }
 
-
-  if (!event) {
-    throw new Error("Event not found");
-  }
-
-  const todoCount = await Todo.countDocuments({
-    eventId: event._id,
-    owner,
-  })
-
-  if(todoCount >= 3){
-    throw new Error("An event can have a maximum of 3 tasks")
-  }
   const todo = await Todo.create({
     title,
     description,
@@ -123,15 +123,24 @@ async function addTodo({
     eventId: event?._id ?? null,
     owner,
   });
+
   if (event) {
-    await Event.findByIdAndUpdate(
+    await Event.findOneAndUpdate(
       { _id: event._id, owner },
-      { $set: { todoId: todo._id } },
+      {
+        $addToSet: {
+          todoIds: todo._id,
+        },
+      },
     );
   }
 
-  return Todo.findById(todo._id).populate("eventId", "title");
+  const result = await Todo.findById(todo._id).populate("eventId", "title");
+
+  return result;
 }
+
+
 
 async function updateTodoById({ id, owner, body }) {
   const data = await Todo.findOneAndUpdate({ _id: id, owner }, body, {
@@ -264,22 +273,34 @@ async function removeTodo({ id, owner }) {
   }
 
   if (data.eventId) {
+    const remainingTodos = await Todo.countDocuments({
+      eventId: data.eventId,
+      owner,
+    });
+
+    const update = {
+      $pull: {
+        todoIds: data._id,
+      },
+    };
+
+    if (remainingTodos === 0) {
+      update.$set = {
+        addTask: false,
+        isCompletedTask: false,
+        description: "",
+      };
+    }
+
     await Event.findOneAndUpdate(
       {
         _id: data.eventId,
         owner,
-        todoId: data._id,
       },
-      {
-        $set: {
-          todoId: null,
-          addTask: false,
-          isCompletedTask: false,
-          description: "",
-        },
-      },
+      update,
     );
   }
+
   return data;
 }
 

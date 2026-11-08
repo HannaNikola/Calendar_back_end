@@ -2,14 +2,14 @@ import Event from "../models/eventModel.js";
 import Todo from "../models/todoModel.js";
 
 async function listEvents(ownerId) {
-  const data = await Event.find({ owner: ownerId }).populate("todoId");
+  const data = await Event.find({ owner: ownerId }).populate("todoIds");
 
   return data;
 }
 
 async function getEventById({ idEvent, owner }) {
   const eventId = await Event.findOne({ _id: idEvent, owner }).populate(
-    "todoId",
+    "todoIds",
   );
 
   return eventId;
@@ -24,7 +24,7 @@ async function addEvent({
   addTask,
   isCompletedTask,
   isImportant,
-  todoId,
+  todoIds,
   colorEvent,
   repeat,
   reminder,
@@ -45,7 +45,7 @@ async function addEvent({
     addTask,
     isCompletedTask,
     isImportant,
-    todoId: todoId || null,
+    todoIds: todoIds || null,
     colorEvent,
     repeat,
     reminder,
@@ -81,7 +81,7 @@ async function addEvent({
 
 //   await event.save();
 
-//   if (event.todoId) {
+//   if (event.todoIds) {
 //     const todoUpdate = {};
 
 //     if (body.title !== undefined) todoUpdate.title = body.title;
@@ -95,11 +95,11 @@ async function addEvent({
 //       todoUpdate.isImportant = body.isImportant;
 
 //     if (Object.keys(todoUpdate).length > 0) {
-//       await Todo.findByIdAndUpdate(event.todoId, todoUpdate, { new: true });
+//       await Todo.findByIdAndUpdate(event.todoIds, todoUpdate, { new: true });
 //     }
 //   }
 
-//   return Event.findOne({ _id: id, owner }).populate("todoId");
+//   return Event.findOne({ _id: id, owner }).populate("todoIds");
 // }
 
 
@@ -140,7 +140,7 @@ async function updateEventById({ id, owner, body }) {
   await event.save();
 
   // Синхронизируем связанные поля Todo
-  if (event.todoId) {
+  if (event.todoIds) {
     const todoUpdate = {};
 
     if (body.title !== undefined) {
@@ -183,7 +183,7 @@ async function updateEventById({ id, owner, body }) {
 
     if (Object.keys(todoUpdate).length > 0) {
       await Todo.findOneAndUpdate(
-        { _id: event.todoId, owner },
+        { _id: event.todoIds, owner },
         { $set: todoUpdate },
         { new: true },
       );
@@ -191,13 +191,13 @@ async function updateEventById({ id, owner, body }) {
   }
 
   // Возвращаем обновлённый Event вместе со связанным Todo
-  return Event.findOne({ _id: id, owner }).populate("todoId");
+  return Event.findOne({ _id: id, owner }).populate("todoIds");
 }
 
 async function removeEvent({ id, owner }) {
   const data = await Event.findOneAndDelete({ _id: id, owner });
-  // if (data?.todoId) {
-  //   await Todo.findByIdAndDelete(data.todoId);
+  // if (data?.todoIds) {
+  //   await Todo.findByIdAndDelete(data.todoIds);
   // }
   return data;
 }
