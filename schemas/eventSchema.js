@@ -4,7 +4,6 @@ export const createEventSchema = {
   [Segments.BODY]: Joi.object({
     title: Joi.string().required(),
     start: Joi.date().optional().allow(null),
-    description: Joi.string().allow(""),
     end: Joi.date().optional().allow(null),
     allDay: Joi.boolean().optional(),
     addTask: Joi.boolean().optional(),
@@ -22,8 +21,3 @@ export const createEventSchema = {
     }).default({}),
   }),
 };
-
-
-
-
-

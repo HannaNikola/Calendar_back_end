@@ -7,10 +7,6 @@ const eventSchema = new mongoose.Schema(
       type: String,
       required: [true, "Set title for event"],
     },
-    description: {
-      type: String,
-      default: "",
-    },
     start: {
       type: Date,
     },

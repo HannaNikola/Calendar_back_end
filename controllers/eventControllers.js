@@ -1,8 +1,6 @@
 import httpError from "../helpers/httpError.js";
 import eventServices from "../services/eventServices.js";
 
-
-
 export const getAllEvents = async (req, res, next) => {
   try {
     const { _id: userId } = req.user;
@@ -40,6 +38,23 @@ export const createEvent = async (req, res, next) => {
   }
 };
 
+export const updateEvent = async (req, res, next) => {
+  try {
+    const { _id: userId } = req.user;
+    const { id } = req.params;
+
+    const data = await eventServices.updateEventById({
+      id,
+      owner: userId,
+      body: req.body,
+    });
+
+    res.status(200).send(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deleteEvent = async (req, res, next) => {
   try {
     const { _id: userId } = req.user;
@@ -53,24 +68,6 @@ export const deleteEvent = async (req, res, next) => {
       message: "Success",
       data: data,
     });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const updateEvent = async (req, res, next) => {
-  try {
-    const { _id: userId } = req.user;
-    const { id } = req.params;
-    const data = await eventServices.updateEventById({
-      id,
-      owner: userId,
-      body: req.body,
-    });
-    if (!data) {
-      throw httpError(404, "Event not found");
-    }
-    res.status(200).send(data);
   } catch (error) {
     next(error);
   }

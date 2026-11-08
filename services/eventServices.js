@@ -17,7 +17,6 @@ async function getEventById({ idEvent, owner }) {
 
 async function addEvent({
   title,
-  description,
   start,
   end,
   allDay,
@@ -36,7 +35,6 @@ async function addEvent({
 
   const data = await Event.create({
     title,
-    description,
     start: eventStart,
     end: eventEnd,
     allDay,
@@ -51,53 +49,6 @@ async function addEvent({
   return data;
 }
 
-// async function updateEventById({ id, owner, body }) {
-//   const event = await Event.findOne({ _id: id, owner });
-//   if (!event) throw new Error("Event not found");
-
-//   const allowed = [
-//     "title",
-//     "description",
-//     "start",
-//     "end",
-//     "allDay",
-//     "addTask",
-//     "isCompletedTask",
-//     "isImportant",
-//     "colorEvent",
-//     "repeat",
-//     "reminder",
-//   ];
-
-//   for (const key of allowed) {
-//     if (body[key] !== undefined) {
-//       event[key] = body[key];
-//     }
-//   }
-
-//   await event.save();
-
-//   if (event.todoIds) {
-//     const todoUpdate = {};
-
-//     if (body.title !== undefined) todoUpdate.title = body.title;
-//     if (body.start !== undefined) todoUpdate.start = body.start;
-//     if (body.end !== undefined) todoUpdate.end = body.end;
-//     if (body.description !== undefined)
-//       todoUpdate.description = body.description;
-//     if (body.isCompletedTask !== undefined)
-//       todoUpdate.isCompletedTask = body.isCompletedTask;
-//     if (body.isImportant !== undefined)
-//       todoUpdate.isImportant = body.isImportant;
-
-//     if (Object.keys(todoUpdate).length > 0) {
-//       await Todo.findByIdAndUpdate(event.todoIds, todoUpdate, { new: true });
-//     }
-//   }
-
-//   return Event.findOne({ _id: id, owner }).populate("todoIds");
-// }
-
 async function updateEventById({ id, owner, body }) {
   const event = await Event.findOne({ _id: id, owner });
 
@@ -105,9 +56,10 @@ async function updateEventById({ id, owner, body }) {
     throw new Error("Event not found");
   }
 
+  const { todoUpdates = [] } = body;
+
   const allowed = [
     "title",
-    "description",
     "start",
     "end",
     "allDay",
@@ -118,73 +70,60 @@ async function updateEventById({ id, owner, body }) {
     "reminder",
   ];
 
-  // Обновляем поля Event
   for (const key of allowed) {
     if (body[key] !== undefined) {
       event[key] = body[key];
     }
   }
 
-  // При завершении очищаем описание только у Event
-  if (body.isCompletedTask === true) {
-    event.description = "";
-    event.addTask = false;
-  }
-
   await event.save();
 
-  // Синхронизируем связанные поля Todo
-  if (event.todoIds) {
+  for (const todo of todoUpdates) {
+    const { id: todoId, ...todoData } = todo;
+
+    if (
+      !todoId ||
+      !event.todoIds.some((id) => id.toString() === todoId.toString())
+    ) {
+      throw new Error("Todo does not belong to this Event");
+    }
+
+    const allowedTodoFields = [
+      "title",
+      "description",
+      "start",
+      "end",
+      "isCompletedTask",
+      "isImportant",
+    ];
+
     const todoUpdate = {};
 
-    if (body.title !== undefined) {
-      todoUpdate.title = body.title;
+    for (const key of allowedTodoFields) {
+      if (todoData[key] !== undefined) {
+        todoUpdate[key] = todoData[key];
+      }
     }
 
-    if (body.start !== undefined) {
-      todoUpdate.start = body.start;
-    }
+    if (Object.keys(todoUpdate).length === 0) continue;
 
-    if (body.end !== undefined) {
-      todoUpdate.end = body.end;
-    }
+    const updatedTodo = await Todo.findOneAndUpdate(
+      {
+        _id: todoId,
+        eventId: event._id,
+        owner,
+      },
+      { $set: todoUpdate },
+      { new: true, runValidators: true },
+    );
 
-    if (body.allDay !== undefined) {
-      todoUpdate.allDay = body.allDay;
-    }
-
-    // Описание Todo сохраняем
-    if (body.description !== undefined) {
-      todoUpdate.description = body.description;
-    }
-
-    if (body.isCompletedTask !== undefined) {
-      todoUpdate.isCompletedTask = body.isCompletedTask;
-    }
-
-    if (body.isImportant !== undefined) {
-      todoUpdate.isImportant = body.isImportant;
-    }
-
-    if (body.addTask !== undefined) {
-      todoUpdate.addTask = body.addTask;
-    }
-
-    // Завершённая задача больше не прикреплена к Event
-    if (body.isCompletedTask === true) {
-      todoUpdate.addTask = false;
-    }
-
-    if (Object.keys(todoUpdate).length > 0) {
-      await Todo.findOneAndUpdate(
-        { _id: event.todoIds, owner },
-        { $set: todoUpdate },
-        { new: true },
+    if (!updatedTodo) {
+      throw new Error(
+        `Todo ${todoId} not found or does not belong to this Event`,
       );
     }
   }
 
-  // Возвращаем обновлённый Event вместе со связанным Todo
   return Event.findOne({ _id: id, owner }).populate("todoIds");
 }
 

@@ -79,100 +79,38 @@ async function addTodo({
 }
 
 async function updateTodoById({ id, owner, body }) {
-  const data = await Todo.findOneAndUpdate({ _id: id, owner }, body, {
-    new: true,
-  });
+  const allowed = [
+    "title",
+    "description",
+    "start",
+    "end",
+    "isCompletedTask",
+    "isImportant",
+  ];
 
-  if (!data) throw new Error("Todo not found");
+  const todoUpdate = {};
 
-  if (data.eventId) {
-    const eventUpdate = {};
-
-    if (body.title !== undefined) eventUpdate.title = body.title;
-    if (body.start !== undefined) eventUpdate.start = body.start;
-    if (body.end !== undefined) eventUpdate.end = body.end;
-
-    if (body.allDay !== undefined) {
-      eventUpdate.allDay = body.allDay;
+  for (const key of allowed) {
+    if (body[key] !== undefined) {
+      todoUpdate[key] = body[key];
     }
+  }
 
-    if (body.description !== undefined) {
-      eventUpdate.description = body.description;
-    }
+  const data = await Todo.findOneAndUpdate(
+    { _id: id, owner },
+    { $set: todoUpdate },
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
 
-    if (body.isCompletedTask !== undefined) {
-      eventUpdate.isCompletedTask = body.isCompletedTask;
-
-      if (body.isCompletedTask === true) {
-        eventUpdate.description = "";
-        eventUpdate.addTask = false;
-      }
-    }
-
-    if (body.isImportant !== undefined) {
-      eventUpdate.isImportant = body.isImportant;
-    }
-
-    if (body.addTask !== undefined) {
-      eventUpdate.addTask = body.addTask;
-    }
-
-    if (Object.keys(eventUpdate).length > 0) {
-      await Event.findOneAndUpdate(
-        { _id: data.eventId, owner },
-        { $set: eventUpdate },
-        { new: true },
-      );
-    }
+  if (!data) {
+    throw new Error("Todo not found");
   }
 
   return data;
 }
-
-// план б
-
-// async function updateTodoById({ id, owner, body }) {
-//   const data = await Todo.findOneAndUpdate(
-//     { _id: id, owner },
-//     { $set: body },
-//     {
-//       new: true,
-//       runValidators: true,
-//     },
-//   ).populate("eventId");
-
-//   if (!data) throw new Error("Todo not found");
-//   if (data.eventId) {
-//     const eventUpdate = {};
-
-//     if (body.title !== undefined) eventUpdate.title = body.title;
-//     if (body.description !== undefined) {
-//       eventUpdate.description = body.description;
-//     }
-//     if (body.start !== undefined) eventUpdate.start = body.start;
-//     if (body.end !== undefined) eventUpdate.end = body.end;
-//     if (body.allDay !== undefined) eventUpdate.allDay = body.allDay;
-//     if (body.isCompletedTask !== undefined) {
-//       eventUpdate.isCompletedTask = body.isCompletedTask;
-//     }
-//     if (body.isImportant !== undefined) {
-//       eventUpdate.isImportant = body.isImportant;
-//     }
-//     if (body.addTask !== undefined) {
-//       eventUpdate.addTask = body.addTask;
-//     }
-
-//     if (Object.keys(eventUpdate).length > 0) {
-//       await Event.findOneAndUpdate(
-//         { _id: data.eventId, owner },
-//         { $set: eventUpdate },
-//         { new: true },
-//       );
-//     }
-//   }
-
-//   return data;
-// }
 
 async function removeTodo({ id, owner }) {
   const data = await Todo.findOneAndDelete({ _id: id, owner });
