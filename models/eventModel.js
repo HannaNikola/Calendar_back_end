@@ -23,10 +23,6 @@ const eventSchema = new mongoose.Schema(
     addTask: {
       type: Boolean,
     },
-    isImportant: {
-      type: Boolean,
-      default: false,
-    },
     isCompletedTask: {
       type: Boolean,
       default: false,
