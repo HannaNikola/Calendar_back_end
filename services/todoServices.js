@@ -39,13 +39,23 @@ async function addTodo({
       throw new Error("Event not found");
     }
 
-    const todoCount = await Todo.countDocuments({
+    // const todoCount = await Todo.countDocuments({
+    //   eventId: event._id,
+    //   owner,
+    // });
+
+    // if (todoCount >= 3) {
+    //   throw new Error("An event can have a maximum of 3 tasks");
+    // }
+
+    const activeTodoCount = await Todo.countDocuments({
       eventId: event._id,
       owner,
+      isCompletedTask: { $ne: true },
     });
 
-    if (todoCount >= 3) {
-      throw new Error("An event can have a maximum of 3 tasks");
+    if (activeTodoCount >= 3) {
+      throw new Error("An event can have a maximum of 3 active tasks");
     }
   }
 
